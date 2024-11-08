@@ -10,6 +10,7 @@ import "./App.css";
 import SideBar from "./layouts/Sidebar";
 import Home from "./pages/Home";
 import Accountant from "./pages/Board";
+import DAT from "./pages/DAT";
 
 const router = createBrowserRouter([
   {
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
       {
         path: "ketoan",
         element: <Accountant />,
+      },
+      {
+        path: "dat",
+        element: <DAT />,
       },
     ],
     errorElement: <div>404 Not Found</div>,
