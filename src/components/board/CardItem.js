@@ -22,9 +22,12 @@ export default function CardItem() {
 
     return draggable({
       element: el,
+      getInitialData: () => {
+        return {dimensions};
+      },
       onDragStart: () => {
         const rect = el.getBoundingClientRect();
-        console.log(rect.width, rect.height);
+        //console.log(rect.width, rect.height);
         setDimensions({ width: rect.width, height: rect.height });
         setIsDragging(true);
       },
