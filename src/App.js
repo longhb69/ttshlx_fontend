@@ -40,8 +40,8 @@ function RootLayout() {
       <div className="basis-[5%]">
         <SideBar />
       </div>
-      <div className="bg-slate-400 basis-[95%] h-screen">
-        <main>
+      <div className="bg-slate-400 basis-[95%] flex justify-center items-center min-h-screen">
+        <main className="h-full">
           <Outlet />
         </main>
       </div>
