@@ -16,6 +16,7 @@ export default function DAT() {
     setStudentInfo((prevData) => [...prevData, newData]);
   };
 
+
   const handleFileUpload = async (e) => {
     const files = e.target.files;
 
@@ -117,14 +118,23 @@ export default function DAT() {
   }, []);
 
   return (
-    <div className="p-4 max-w-7xl mx-auto">
+    <div className="p-4 max-w-7xl mx-auto bg-slate-400 basis-[95%] flex flex-col min-h-screen">
       {/* Student List - Updated grid columns */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-8">
         {studentInfo.map((info, index) => (
           <div
             key={index}
-            className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow"
+            className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow relative"
           >
+            <button
+              onClick={() => {
+                setStudentInfo(prev => prev.filter((_, i) => i !== index));
+                setStudentData(prev => prev.filter((_, i) => i !== index));
+              }}
+              className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-full hover:bg-red-100 text-red-600"
+            >
+              ×
+            </button>
             <div className="mb-3">
               <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
                 Student {index + 1}
@@ -200,7 +210,7 @@ export default function DAT() {
       <div className="text-center">
         <Button
           onClick={onInputTriggerClick}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors sticky top-5 bottom-5"
         >
           Tải File Lên
         </Button>
