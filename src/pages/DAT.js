@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Button from "../components/Button";
 import * as XLSX from "xlsx";
-import { Clock8 } from "lucide-react";
+import { Clock8, RotateCcw } from "lucide-react";
 
 export default function DAT() {
   const [studentData, setStudentData] = useState([]);
@@ -16,6 +16,11 @@ export default function DAT() {
     setStudentInfo((prevData) => [...prevData, newData]);
   };
 
+  const handleReset = () => {
+    setStudentData([]);
+    setStudentInfo([]);
+    setDatResult([]);
+  };
 
   const handleFileUpload = async (e) => {
     const files = e.target.files;
@@ -42,7 +47,7 @@ export default function DAT() {
 
       for (let i = 0; i < test.length; i++) {
         const row = test[i];
-        if (row["CTY CP CÔNG NGHỆ SÁT HẠCH TOÀN PHƯƠNG"] == "Tổng: ") break;
+        if (row["CTY CP CÔNG NGHỆ SÁT HẠCH TOÀN PHƯƠNG"] === "Tổng: ") break;
         transformedData.push({
           stt: row["CTY CP CÔNG NGHỆ SÁT HẠCH TOÀN PHƯƠNG"], // You can set this to whatever index or value you need
           sessionId: row["__EMPTY"], // Value for the first column
@@ -206,13 +211,20 @@ export default function DAT() {
         </div>
       </div>
 
-      {/* Upload Button */}
-      <div className="text-center">
+      {/* Upload and Reset Buttons */}
+      <div className="text-center space-x-4 flex justify-center">
         <Button
           onClick={onInputTriggerClick}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors sticky top-5 bottom-5"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
         >
           Tải File Lên
+        </Button>
+        <Button
+          onClick={handleReset}
+          className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg transition-colors flex items-center gap-2"
+        >
+          <RotateCcw className="w-4 h-4" />
+          Xóa Tất Cả
         </Button>
         <input
           className="hidden"

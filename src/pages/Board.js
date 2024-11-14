@@ -1,7 +1,9 @@
 import ListContainer from "../components/board/ListContainer";
-import ListForm from "../components/board/ListForm";
-import TaskBlock from "../components/TaskBlock";
+import BoardLayout from "../layouts/board/layout";
+
 
 export default function Board() {
-  return <ListContainer />;
+  return <BoardLayout>
+      <ListContainer />
+    </BoardLayout>
 }

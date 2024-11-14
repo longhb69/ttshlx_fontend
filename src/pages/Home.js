@@ -1,4 +1,4 @@
-import SideBar from "../layouts/Sidebar";
+
 import Board from "./Board";
 
 export default function Home() {
