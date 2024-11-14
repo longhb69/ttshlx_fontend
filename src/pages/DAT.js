@@ -19,7 +19,6 @@ export default function DAT() {
   const handleReset = () => {
     setStudentData([]);
     setStudentInfo([]);
-    setDatResult([]);
   };
 
   const handleFileUpload = async (e) => {
