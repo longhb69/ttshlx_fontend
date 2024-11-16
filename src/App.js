@@ -11,6 +11,7 @@ import SideBar from "./layouts/Sidebar";
 import Home from "./pages/Home";
 import Accountant from "./pages/Board";
 import DAT from "./pages/DAT";
+import Tracking from "./pages/Tracking";
 
 const router = createBrowserRouter([
   {
@@ -22,8 +23,8 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: "ketoan",
-        element: <Accountant />,
+        path: "tracking",
+        element: <Tracking />,
       },
       {
         path: "dat",
