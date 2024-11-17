@@ -1,5 +1,7 @@
+import { useEffect, useRef, useState } from 'react';
 import TrackItem from '../components/tracking/TrackItem';
-
+import { db } from '../config/firebase';
+import { getDocs, collection } from 'firebase/firestore';
 
 const tracking = [
     {
@@ -27,6 +29,24 @@ const tracking = [
 ]
 
 export default function Tracking() {
+  const [teacherList, setTeacherList] = useState([]);
+
+  const teachersCollectionRef = collection(db, "teachers")
+
+  useEffect(() => {
+    const getTeacherList = async () => {
+      try {
+        const data = await getDocs(teachersCollectionRef)
+        const filteredData = data.docs.map((doc) => ({...doc.data(), id: doc.id})) 
+        console.log(filteredData)
+        setTeacherList(filteredData)
+      } catch(err) {
+        console.log(err)
+      }
+    }
+    getTeacherList()
+  }, [])
+
   return (
     <div className="p-4">
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -34,6 +54,7 @@ export default function Tracking() {
           <TrackItem track={track} />
         ))}
       </div>
+
     </div>
   );
 }
