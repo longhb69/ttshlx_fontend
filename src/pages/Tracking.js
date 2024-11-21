@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
-import TrackItem from '../components/tracking/TrackItem';
-import { db } from '../config/firebase';
-import { getDocs, collection } from 'firebase/firestore';
+import { useEffect, useRef, useState } from "react";
+import TrackItem from "../components/tracking/TrackItem";
+import { db } from "../config/firebase";
+import { getDocs, collection, getDoc, doc } from "firebase/firestore";
+import Plate from "../components/tracking/Plate";
 
 const tracking = [
     {
@@ -25,36 +26,43 @@ const tracking = [
         startDate: null,
         endDate: null,
         status: 1,
-    }
-]
+    },
+];
 
 export default function Tracking() {
-  const [teacherList, setTeacherList] = useState([]);
+    const [teacherList, setTeacherList] = useState([]);
+    const [cars, setCars] = useState([]);
 
-  const teachersCollectionRef = collection(db, "teachers")
+    const teachersCollectionRef = collection(db, "teachers");
+    const carsCollectionRef = collection(db, "cars");
 
-  useEffect(() => {
-    const getTeacherList = async () => {
-      try {
-        const data = await getDocs(teachersCollectionRef)
-        const filteredData = data.docs.map((doc) => ({...doc.data(), id: doc.id})) 
-        console.log(filteredData)
-        setTeacherList(filteredData)
-      } catch(err) {
-        console.log(err)
-      }
-    }
-    getTeacherList()
-  }, [])
+    useEffect(() => {
+        const getTeacherList = async () => {
+            try {
+                const querySnapshot = await getDocs(carsCollectionRef);
+                setCars(querySnapshot.docs.map((doc) => doc.data()));
+            } catch (err) {
+                console.log(err);
+            }
+        };
+        getTeacherList();
+    }, []);
 
-  return (
-    <div className="p-4">
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {tracking.map((track) => (
-          <TrackItem track={track} />
-        ))}
-      </div>
-
-    </div>
-  );
+    return (
+        <div className="p-4">
+            <div className="grid grid-rows-4 gap-2">
+                {cars.length > 1 &&
+                    cars.map((car) => {
+                        return (
+                            <Plate
+                                plate={car.plate}
+                                expiry_date={car.expiry_date}
+                                owner={car.owner}
+                                class={car.class}
+                            />
+                        );
+                    })}
+            </div>
+        </div>
+    );
 }
