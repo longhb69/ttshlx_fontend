@@ -44,7 +44,7 @@ function RootLayout() {
       <div className="basis-[10%]">
         <SideBar />
       </div>
-      <div className="w-full h-full">
+      <div className="w-full h-full scroll-container">
         <main className="h-full">
           <Outlet />
         </main>

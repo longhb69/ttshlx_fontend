@@ -2,3 +2,26 @@ html, body, #root {
     height: 100%;
     margin: 0;
   }
+
+.scroll-container {
+  overflow-y: auto; /* Enable vertical scrolling */
+  scrollbar-width: auto ; /* For Firefox */
+  scrollbar-color: #d1d5db #f3f4f6; /* Scrollbar and track colors */
+}
+
+.scroll-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scroll-container::-webkit-scrollbar-track {
+  background: #f3f4f6; /* Track color */
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+  background: #d1d5db; /* Thumb color */
+  border-radius: 12px; /* Rounded edges */
+}
+
+.scroll-container::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af; /* Hover color */
+}

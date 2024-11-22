@@ -122,7 +122,7 @@ export default function DAT() {
   }, []);
 
   return (
-    <div className="p-4 max-w-7xl mx-auto bg-slate-400 basis-[95%] flex flex-col min-h-screen">
+    <div className="p-4 max-w-7xl mx-auto  basis-[95%] flex flex-col min-h-screen">
       {/* Student List - Updated grid columns */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-8">
         {studentInfo.map((info, index) => (
