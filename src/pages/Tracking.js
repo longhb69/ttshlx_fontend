@@ -5,31 +5,6 @@ import { getDocs, collection, getDoc, doc } from "firebase/firestore";
 import Plate from "../components/tracking/Plate";
 import CourseList from "../components/tracking/CourseList";
 
-const tracking = [
-    {
-        id: 0,
-        plate: 0,
-        teacher: 0,
-        course: 1,
-        numberOfStudent: 1,
-        courseState: 0,
-        startDate: null,
-        endDate: null,
-        status: 1,
-    },
-    {
-        id: 1,
-        plate: 1,
-        teacher: 1,
-        course: 1,
-        numberOfStudent: 2,
-        courseState: 0,
-        startDate: null,
-        endDate: null,
-        status: 1,
-    },
-];
-
 export default function Tracking() {
     const [teacherList, setTeacherList] = useState([]);
     const [cars, setCars] = useState([]);
@@ -81,7 +56,7 @@ export default function Tracking() {
                         courses.map((course) => {
                             return (
                                 <li className="block shirk-0 px-[6px] h-full whitespace-nowrap">
-                                    <CourseList name={course.id} state={course.state} />
+                                    <CourseList course={course} />
                                 </li>
                             );
                         })}
