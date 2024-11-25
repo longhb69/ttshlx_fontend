@@ -18,11 +18,13 @@ export default function CourseList({name, state}) {
             dropTargetForElements({
                 element: columnRef.current,
                 getIsSticky: () => true,
-                getData: ({}) => {},
                 onDragEnter: () => setColState(isCarOver),
                 onDragLeave: () => setColState(idle),
                 onDragStart: () => setColState(isCarOver),
-                onDrop: () => setColState(idle)
+                onDrop: ({source}) => {
+                    setColState(idle)
+                    console.log(source.data)
+                }
             })
         )
     }, [])
@@ -31,7 +33,7 @@ export default function CourseList({name, state}) {
         console.log("drag over")
     }, [colState])
 
-    return <div className={`border-2 border-transparent border-2 rounded-xl ${colState.type === 'is-car-over' ? 'border-[#4B0082]' : ''}`}>
+    return <div className={`border-2 rounded-xl ${colState.type === 'is-car-over' ? 'border-[#4B0082]' : 'border-transparent'}`}>
             <div className={`flex flex-col relate border-box md:w-[200px] md:h-[400px] lg:w-[280px] lg:h-[600px] max-h-full pb-[8px] rounded-xl bg-[#F1F2F4] align-top whitespace-normal scroll-m-[8px] 
                     `}
                     ref={columnRef}
