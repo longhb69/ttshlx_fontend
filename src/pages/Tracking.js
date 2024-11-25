@@ -67,7 +67,7 @@ export default function Tracking() {
 
     return (
         <div className="flex justify-between p-4">
-            <div className="flex flex-wrap">
+            <div className="flex flex-wrap basis-[40%]">
                 <div className="flex flex-col gap-2">
                     {cars.length > 1 &&
                         cars.map((car) => {
@@ -75,7 +75,7 @@ export default function Tracking() {
                         })}
                 </div>
             </div>
-            <div className="flex relative border-box w-[1200px] h-[800px] max-h-full rounded mr-5">
+            <div className="flex relative border-box w-[1200px] h-[800px] max-h-full rounded mr-5 basis-[60%]">
                 <ol className="flex gap-1">
                     {courses.length > 1 &&
                         courses.map((course) => {
