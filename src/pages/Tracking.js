@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Plus } from 'lucide-react';
 import TrackItem from "../components/tracking/TrackItem";
 import { db } from "../config/firebase";
-import { getDocs, collection, getDoc, doc } from "firebase/firestore";
+import { getDocs, collection, getDoc, doc, onSnapshot } from "firebase/firestore";
 import Plate from "../components/tracking/Plate";
 import CourseList from "../components/tracking/CourseList";
 
@@ -25,42 +25,46 @@ export default function Tracking() {
                 console.log(err);
             }
         };
-        const getCoursesList = async () => {
-            try {
-                const querySnapshot = await getDocs(coursesCollectionRef);
-                setCourses(querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
-            } catch (err) {
-                console.log(err);
-            }
-        };
-
+    
         getTeacherList();
-        getCoursesList();
     }, []);
+
+    useEffect(() => {
+        const unsubscribe = onSnapshot(
+            coursesCollectionRef,
+            (querySnapshot) => {
+                setCourses(
+                    querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+                )
+                console.log("Something change")
+            },
+            (error) => {
+                console.error('Error fetching real-time updates:', error);
+            }
+        ) 
+
+        return () => unsubscribe()
+    }, [])
 
     useEffect(() => {
         console.log(courses);
     }, [courses]);
 
     return (
-        <div className="flex justify-between px-8 py-4 h-full">
-            <div className="flex flex-col justify-between flex-wrap max-h-full h-full min-w-[320px] bg-white rounded p-2 mb-5">
-                <div className="w-full">
-                    <input
-                            type="text"
-                            placeholder="Tìm kiếm xe..."
-                            className="mb-2 p-2 border rounded"
-                            onChange={(e) => console.log(e.target.value)}
-                        />
-                    <div className="">
-                        <ol className="flex flex-wrap gap-2">
-                            {cars.length > 1 &&
-                                cars.map((car) => {
-                                    return <Plate car={car} />;
-                                })}
-                        </ol>
-                    </div>
-                </div>
+        <div className="flex justify-between pl-8 py-4 h-full">
+            <div className="flex justify-between flex-wrap max-h-full h-full w-[360px] min-w-[300px] bg-[#faf6f5] rounded p-2.5 mb-5">
+                <input
+                        type="text"
+                        placeholder="Tìm kiếm xe..."
+                        className="mb-2 p-2 border rounded w-[180px] h-[35px]"
+                        onChange={(e) => console.log(e.target.value)}
+                    />
+                <ol className="grid grid-cols-2 gap-x-4 gap-y-2.5 overflow-y-auto max-h-[85%] w-full plate-scroll">
+                    {cars.length > 1 &&
+                        cars.map((car) => {
+                            return <Plate car={car} />;
+                        })}
+                </ol>
                 <div className="hover:bg-gray-200 pt-[8px] px-[8px]">
                     <button 
                         onClick={()=>addCarModalRef.current.showModal()}
@@ -76,39 +80,12 @@ export default function Tracking() {
                         courses.map((course) => {
                             return (
                                 <li className="block shirk-0 px-[6px] h-full whitespace-nowrap">
-                                    <CourseList course={course} />
+                                    <CourseList course={course}/>
                                 </li>
                             );
                         })}
                 </ol>
             </div>
-            <dialog id="my_modal_3" class="modal" ref={addCarModalRef}>
-                <div class="modal-box">
-                    <form method="dialog">
-                        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-                    </form>
-                    <div className="p-4">
-                        <div className="flex justify-between">
-                            <div className="flex flex-col">
-                                <label htmlFor="car-plate" className="block mb-2">Biển số:</label>
-                                <input
-                                    id="car-plate"
-                                    type="text"
-                                    placeholder="Type here"
-                                    class="input input-bordered input-sm w-full max-w-xs" />
-                                </div>
-                            <div className="flex flex-col">
-                                <label htmlFor="car-class" className="block mb-2">Chọn loại xe:</label>
-                                <select id="car-class" class="select select-bordered select-sm w-[100px] max-w-xs">
-                                    <option>C</option>
-                                    <option>B11</option>
-                                    <option>B1+B2</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </dialog>
         </div>
     );
 }

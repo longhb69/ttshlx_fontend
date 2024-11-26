@@ -4,12 +4,14 @@ import { Pencil } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import formatFirebaseTimestamp from "../../utils/formatFirebaseTimestamp";
 import { MoveRight } from "lucide-react";
+import {doc, updateDoc} from 'firebase/firestore'
+import {db} from "../../config/firebase"
 
 const idle = { type: "idle" };
 const isCarOver = { type: "is-car-over" };
 
 export default function CourseList({ course }) {
-    const { id, state, start_date, end_date } = course;
+    const { id, state, start_date, end_date, cars } = course;
     const columnRef = useRef(null);
     const [colState, setColState] = useState(idle);
 
@@ -26,13 +28,28 @@ export default function CourseList({ course }) {
                     //self.data.id get this columnRef id
                     setColState(idle);
                     console.log(source.data);
+                    AddCarToCourse(source.data.car.plate)
                 },
             })
         );
     }, []);
 
+    const AddCarToCourse = async (plate, number_of_students = 8, note = "") => {
+        try {
+            const courseDocRef = doc(db, 'courses', id)
+            await updateDoc(courseDocRef, {
+                [`cars.${plate}`] : {
+                    note: note,
+                    number_of_students: number_of_students
+                },
+            })
+        } catch(error) {
+            console.error('Error updating document:', error);
+        }
+    } 
+
     useEffect(() => {
-        console.log("drag over");
+        console.log("drag over", id);
     }, [colState]);
 
     return (
@@ -58,6 +75,15 @@ export default function CourseList({ course }) {
                         </div>
                         <div>{formatFirebaseTimestamp(end_date.seconds)}</div>
                     </div>
+                </div>
+                <div>
+                    {Object.entries(cars).map(([key, value]) => (
+                        <div className="flex gap-5">
+                            <div>{key}</div>
+                            <div></div>
+                            <div>{value.number_of_students} hv</div>
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>

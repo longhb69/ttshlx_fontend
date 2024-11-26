@@ -3,6 +3,11 @@ html, body, #root {
     margin: 0;
   }
 
+.plate-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #091e4224 #091e420f;
+}
+
 .scroll-container {
   overflow-y: auto; /* Enable vertical scrolling */
   scrollbar-width: auto ; /* For Firefox */

@@ -15,16 +15,16 @@ const PlatePrimitive = ({ car }) => {
     const { plate, expiry_date, owner_name, car_class, available_slot, current_slot } = car;
     return (
         <>
-            <div className="max-w-[130px] rounded text-xs">
+            <div className="max-w-[130px] min-w-[90px] rounded text-xs">
                 <div className="flex bg-yellow-400 border-black border-t-2 border-l-2 border-b-2 px-2 py-1 rounded-tl w-full h-[28px] text-center items-center justify-center">
                     <span className="font-mono font-bold">{plate}</span>
                 </div>
-                <div className="w-full bg-slate-200 p-1 rounded-bl border-b-2 border-l-2 border-r-2 border-[#244855]">
+                <div className="w-full min-w-full bg-slate-200 p-1 rounded-bl border-b-2 border-l-2 border-r-2 border-[#244855]">
                     <div className="text-xs flex items-center gap-1">
                         <span><CalendarClock className="w-[16px] h-[16px]"/></span>
                         <span>{formatFirebaseTimestamp(expiry_date.seconds)}</span>
                     </div>
-                    <div className="max-w-[70px] mt-1">{owner_name}</div>
+                    <div className="max-w-[70px] text-[13px] mt-1">{owner_name}</div>
                 </div>
             </div>
             <div className="h-full text-base">
