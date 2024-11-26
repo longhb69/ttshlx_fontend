@@ -39,11 +39,9 @@ function RootLayout() {
   return (
     <div 
       style={{backgroundImage: "url(https://trello-backgrounds.s3.amazonaws.com/SharedBackground/2560x1708/c15f0a80eeaa08ab2db1c2225534c7d6/photo-1728588266991-90ecfa62a372.webp)"}}
-      className="flex h-full w-full crelative bg-cover bg-center bg-no-repeat"
+      className="flex h-screen w-full crelative bg-cover bg-center bg-no-repeat"
     >
-      <div className="basis-[10%]">
-        <SideBar />
-      </div>
+      <SideBar />
       <div className="w-full h-full scroll-container">
         <main className="h-full">
           <Outlet />

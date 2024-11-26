@@ -16,7 +16,7 @@ const PlatePrimitive = ({ car }) => {
     return (
         <>
             <div className="max-w-[130px] rounded text-xs">
-                <div className="flex bg-yellow-400 border-black border-t-2 border-l-2 border-b-2 px-2 py-1 rounded-tl w-full h-[35px] text-center items-center justify-center">
+                <div className="flex bg-yellow-400 border-black border-t-2 border-l-2 border-b-2 px-2 py-1 rounded-tl w-full h-[28px] text-center items-center justify-center">
                     <span className="font-mono font-bold">{plate}</span>
                 </div>
                 <div className="w-full bg-slate-200 p-1 rounded-bl border-b-2 border-l-2 border-r-2 border-[#244855]">
@@ -28,7 +28,7 @@ const PlatePrimitive = ({ car }) => {
                 </div>
             </div>
             <div className="h-full text-base">
-                <div className="w-[35px] h-[35px] bg-white flex items-center justify-center border-t-2 border-r-2 border-b-2 border-black rounded-tr font-bold">
+                <div className="w-[35px] h-[28px] bg-white flex items-center justify-center border-t-2 border-r-2 border-b-2 border-black rounded-tr font-bold">
                     <span className="text-[#003135]">{car_class}</span>
                 </div>
                 <div className="w-[35px] h-[30px] bg-slate-300 flex items-center justify-center border-r-2 border-b-2 border-[#244855] rounded-br text-sm font-medium">
@@ -75,10 +75,10 @@ export default function Plate({ car }) {
     }, []);
 
     return (
-        <div className={`flex max-w-[145px] cursor-pointer ${state.type === "dragging" ? "opacity-40" : ""}`} ref={ref}>
+        <li className={`flex max-w-[145px] cursor-pointer ${state.type === "dragging" ? "opacity-40" : ""}`} ref={ref}>
             <PlatePrimitive car={car} />
             {state.type === "preview" && createPortal(<PlatePreview rect={state.rect} car={car} />, state.container)}
-        </div>
+        </li>
     );
 }
 
