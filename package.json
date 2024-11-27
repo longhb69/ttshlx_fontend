@@ -3,10 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@atlaskit/blanket": "^13.3.5",
     "@atlaskit/calendar": "^15.1.0",
+    "@atlaskit/datetime-picker": "^15.9.5",
+    "@atlaskit/form": "^10.5.12",
     "@atlaskit/modal-dialog": "^12.17.13",
     "@atlaskit/pragmatic-drag-and-drop": "^1.4.0",
+    "@atlaskit/radio": "^6.6.0",
     "@atlaskit/tag": "^12.6.6",
+    "@atlaskit/textfield": "^6.6.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -45,6 +50,7 @@
     ]
   },
   "devDependencies": {
+    "daisyui": "^4.12.14",
     "tailwindcss": "^3.4.14"
   }
 }
