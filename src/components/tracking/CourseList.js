@@ -4,11 +4,14 @@ import { Pencil } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import formatFirebaseTimestamp from "../../utils/formatFirebaseTimestamp";
 import { MoveRight } from "lucide-react";
-import {doc, updateDoc} from 'firebase/firestore'
-import {db} from "../../config/firebase"
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../../config/firebase";
 
 const idle = { type: "idle" };
 const isCarOver = { type: "is-car-over" };
+
+const encodeKey = (key) => key.replace(/\./g, "_DOT_");
+const decodeKey = (key) => key.replace(/_DOT_/g, ".");
 
 export default function CourseList({ course }) {
     const { id, state, start_date, end_date, cars } = course;
@@ -28,7 +31,10 @@ export default function CourseList({ course }) {
                     //self.data.id get this columnRef id
                     setColState(idle);
                     console.log(source.data);
-                    AddCarToCourse(source.data.car.plate)
+                    AddCarToCourse(source.data.car.plate).then(() => {
+                        console.log("update car");
+                        updateCarSlot(source.data.car.plate, 8, source.data.car.current_slot, source.data.car.available_slot);
+                    });
                 },
             })
         );
@@ -36,20 +42,32 @@ export default function CourseList({ course }) {
 
     const AddCarToCourse = async (plate, number_of_students = 8, note = "") => {
         try {
-            const courseDocRef = doc(db, 'courses', id)
+            const courseDocRef = doc(db, "courses", id);
             await updateDoc(courseDocRef, {
-                [`cars.${plate}`] : {
+                [`cars.${encodeKey(plate)}`]: {
                     note: note,
-                    number_of_students: number_of_students
+                    number_of_students: number_of_students,
                 },
-            })
-        } catch(error) {
-            console.error('Error updating document:', error);
+            });
+        } catch (error) {
+            console.error("Error updating document:", error);
         }
-    } 
+    };
+
+    const updateCarSlot = async (plate, slot_number, current_slot, available_slot) => {
+        try {
+            const newSlotNumber = (current_slot += slot_number);
+            const carDocRef = doc(db, "cars", plate);
+            await updateDoc(carDocRef, {
+                current_slot: newSlotNumber <= available_slot ? newSlotNumber : available_slot,
+            });
+        } catch (error) {
+            console.error("Error updating document:", error);
+        }
+    };
 
     useEffect(() => {
-        console.log("drag over", id);
+        //console.log("drag over", id);
     }, [colState]);
 
     return (
@@ -79,7 +97,7 @@ export default function CourseList({ course }) {
                 <div>
                     {Object.entries(cars).map(([key, value]) => (
                         <div className="flex gap-5">
-                            <div>{key}</div>
+                            <div>{decodeKey(key)}</div>
                             <div></div>
                             <div>{value.number_of_students} hv</div>
                         </div>
