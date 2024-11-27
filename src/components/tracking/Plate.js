@@ -3,16 +3,19 @@ import formatFirebaseTimestamp from "../../utils/formatFirebaseTimestamp";
 import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { setCustomNativeDragPreview } from "@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview";
 import { preserveOffsetOnSource } from "@atlaskit/pragmatic-drag-and-drop/element/preserve-offset-on-source";
+import Tag from "./Tag";
 import { createPortal } from "react-dom";
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine";
 import { CalendarClock } from 'lucide-react';
 
 
+const colors = ['#EF9995', '#A4CBB4', '#DC8850', '#D97706']
+
 const idleState = { type: "idle" };
 const draggingState = { type: "dragging" };
 
 const PlatePrimitive = ({ car }) => {
-    const { plate, expiry_date, owner_name, car_class, available_slot, current_slot } = car;
+    const { plate, expiry_date, owner_name, car_class, available_slot, current_slot, courses } = car;
     return (
         <>
             <div className="max-w-[130px] min-w-[90px] rounded text-xs">
@@ -27,14 +30,22 @@ const PlatePrimitive = ({ car }) => {
                     <div className="max-w-[70px] text-[13px] mt-1">{owner_name}</div>
                 </div>
             </div>
-            <div className="h-full text-base">
+            <div className="h-full text-base relative">
                 <div className="w-[35px] h-[28px] bg-white flex items-center justify-center border-t-2 border-r-2 border-b-2 border-black rounded-tr font-bold">
                     <span className="text-[#003135]">{car_class}</span>
                 </div>
-                <div className="w-[35px] h-[30px] bg-slate-300 flex items-center justify-center border-r-2 border-b-2 border-[#244855] rounded-br text-sm font-medium">
+                <div className="w-[35px] h-[30px] bg-slate-300 flex items-center justify-between border-r-2 border-b-2 border-[#244855] rounded-br text-sm font-medium relative">
                     <span className="text-[#244855]">
                         {current_slot}/{available_slot}
                     </span>
+                    <div className="absolute top-0 left-9">
+                        <div className="flex flex-col text-[10px]">
+                            {courses?.length > 0 && courses.map((course, index) => {
+                                return <Tag text={`${course}`} background={colors[index % colors.length]} />
+                            })}
+                         
+                        </div>
+                    </div>
                 </div>
             </div>
         </>

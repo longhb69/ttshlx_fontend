@@ -52,7 +52,7 @@ export default function Tracking() {
 
     return (
         <div className="flex justify-between pl-8 py-4 h-full">
-            <div className="flex justify-between flex-wrap max-h-full h-full w-[360px] min-w-[300px] bg-[#faf6f5] rounded p-2.5 mb-5">
+            <div className="flex justify-between flex-wrap max-h-full h-full w-[400px] min-w-[300px] bg-[#faf6f5] rounded p-2.5 mb-5">
                 <input
                         type="text"
                         placeholder="Tìm kiếm xe..."
