@@ -492,3 +492,35 @@ export default function BoardExample() {
     </BoardContext.Provider>
   );
 }
+
+<>
+<div className="max-w-[130px] min-w-[90px] rounded text-xs">
+    <div className="flex bg-yellow-400 border-black border-t-2 border-l-2 border-b-2 px-2 py-1 rounded-tl w-full h-[28px] text-center items-center justify-center">
+        <span className="font-mono font-bold">{plate}</span>
+    </div>
+    <div className="w-full min-w-full bg-slate-200 p-1 rounded-bl border-b-2 border-l-2 border-r-2 border-[#244855]">
+        <div className="text-xs flex items-center gap-1">
+            <span><CalendarClock className="w-[16px] h-[16px]"/></span>
+            <span>{formatFirebaseTimestamp(expiry_date.seconds)}</span>
+        </div>
+        <div className="max-w-[70px] text-[13px] mt-1">{owner_name}</div>
+    </div>
+</div>
+<div className="h-full text-base relative">
+    <div className="w-[35px] h-[28px] bg-white flex items-center justify-center border-t-2 border-r-2 border-b-2 border-black rounded-tr font-bold">
+        <span className="text-[#003135]">{car_class}</span>
+    </div>
+    <div className="w-[35px] h-[30px] bg-slate-300 flex justify-center items-center border-r-2 border-b-2 border-[#244855] rounded-br text-sm font-medium relative">
+        <span className="text-[#244855]">
+            {current_slot}/{available_slot}
+        </span>
+        <div className="absolute top-0 left-9">
+            <div className="flex flex-col text-[10px]">
+                {courses?.length > 0 && courses.map((course, index) => {
+                    return <Tag text={`${course}`} background={colors[index % colors.length]} />
+                })}
+             
+            </div>
+        </div>
+    </div>
+</div>

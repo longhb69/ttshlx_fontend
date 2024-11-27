@@ -42,8 +42,8 @@ function RootLayout() {
       className="flex h-screen w-full crelative bg-cover bg-center bg-no-repeat"
     >
       <SideBar />
-      <div className="w-full h-full scroll-container">
-        <main className="h-full">
+      <div className="w-full h-full scroll-container relative">
+        <main className="h-full relative">
           <Outlet />
         </main>
       </div>

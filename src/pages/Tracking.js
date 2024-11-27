@@ -1,15 +1,21 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Plus } from "lucide-react";
 import TrackItem from "../components/tracking/TrackItem";
 import { db } from "../config/firebase";
 import { getDocs, collection, getDoc, doc, onSnapshot } from "firebase/firestore";
 import Plate from "../components/tracking/Plate";
 import CourseList from "../components/tracking/CourseList";
+import Modal, { ModalTransition, useModal } from '@atlaskit/modal-dialog';
+import CarModal from "../components/modal/CarModal";
 
 export default function Tracking() {
     const [teacherList, setTeacherList] = useState([]);
     const [cars, setCars] = useState([]);
     const [courses, setCourses] = useState([]);
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    //const { onClose, titleId } = useModal();
+    const openModal = useCallback(() => setIsModalOpen(true), []);
+	const closeModal = useCallback(() => setIsModalOpen(false), []);
 
     const teachersCollectionRef = collection(db, "teachers");
     const carsCollectionRef = collection(db, "cars");
@@ -46,38 +52,43 @@ export default function Tracking() {
     }, []);
 
     useEffect(() => {
-        console.log(courses);
-    }, [courses]);
+        console.log(isModalOpen);
+    }, [isModalOpen]);
 
-    return (
+    const CustomModalContent = () => {
+        const { onClose, titleId } = useModal();
+        return (
+            <div>hi</div>
+        )
+    }
+
+    return <>
         <div className="flex justify-between pl-8 py-4 h-full">
-            <div className="flex justify-between flex-wrap max-h-full h-full w-[400px] min-w-[300px] bg-[#faf6f5] rounded p-2.5 mb-5">
+            <div className="flex justify-between flex-wrap max-h-full h-full w-[360px] min-w-[300px] bg-[#ECE3CA] rounded pl-2.5 py-2.5 mb-5 shadow-lg">
                 <input
                     type="text"
                     placeholder="Tìm kiếm xe..."
-                    className="mb-2 p-2 border rounded w-[180px] h-[35px]"
+                    className="mb-2 p-2 border rounded w-[180px] h-[35px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                     onChange={(e) => console.log(e.target.value)}
                 />
-                <ol className="grid grid-cols-2 gap-x-4 gap-y-2.5 overflow-y-auto max-h-[85%] w-full plate-scroll">
+                <ol className="grid grid-cols-2 gap-y-4 overflow-y-auto max-h-[85%] w-full plate-scroll">
                     {cars.length > 1 &&
                         cars.map((car) => {
-                            return <Plate car={car} />;
+                            return <Plate car={car} className="border rounded-lg p-2 shadow-md hover:shadow-lg transition-shadow duration-200" />;
                         })}
                 </ol>
-                <div className="hover:bg-gray-200 pt-[8px] px-[8px]">
+                <div className="pt-[8px] px-[8px] rounded-md flex items-center justify-center">
                     <button
-                        onClick={() => addCarModalRef.current.showModal()}
-                        className="flex grow items-center justify-start m-0 pb-[6px] pr-[8px] rounded bg-transparent select-none text-[#44546f] w-full curosr-pointer font-medium text-[14px] leading-5"
+                        onClick={() => openModal()}
+                        className="flex items-center justify-center m-0 p-[2px] rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-200"
                     >
-                        <span className="mr-[8px] leading-1 inline-block">
-                            <Plus className="w-[20px] h-[20px]" />
-                        </span>{" "}
-                        Thêm xe
+                        <span className="ml-[2px] mr-[5px] leading-1"><Plus className="w-[20px] h-[20px]" /></span>
+                        <span className="pr-2">Thêm xe</span>
                     </button>
                 </div>
             </div>
             <div className="flex flex-col relative border-box w-[1200px] max-h-full rounded mr-5 basis-[60%] justify-between">
-                <ol className="flex gap-1">
+                <ol className="flex">
                     {courses.length > 1 &&
                         courses.map((course) => {
                             return (
@@ -87,10 +98,8 @@ export default function Tracking() {
                             );
                         })}
                 </ol>
-                <div className="bg-[#faf6f5] rounded-md">
-                    <div className="w-[400px] h-[400px]"></div>
-                </div>
             </div>
         </div>
-    );
+        <CarModal trigger={isModalOpen} setTrigger={setIsModalOpen}/>
+    </>
 }

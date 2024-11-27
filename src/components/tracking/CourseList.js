@@ -4,8 +4,9 @@ import { Pencil } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import formatFirebaseTimestamp from "../../utils/formatFirebaseTimestamp";
 import { MoveRight } from "lucide-react";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
+import { arrayUnion } from "firebase/firestore/lite";
 
 const idle = { type: "idle" };
 const isCarOver = { type: "is-car-over" };
@@ -43,12 +44,35 @@ export default function CourseList({ course }) {
     const AddCarToCourse = async (plate, number_of_students = 8, note = "") => {
         try {
             const courseDocRef = doc(db, "courses", id);
+            const carDocRef = doc(db, "cars", plate);
+            const carDocSnap = await getDoc(carDocRef);
+
             await updateDoc(courseDocRef, {
                 [`cars.${encodeKey(plate)}`]: {
                     note: note,
                     number_of_students: number_of_students,
                 },
             });
+
+            if (carDocSnap.exists()) {
+                const carData = carDocSnap.data();
+                const currentCourses = carData.courses || []; 
+
+                console.log("Current Courses:", currentCourses);
+
+                const updatedCourses = [...currentCourses, ...[id]]; 
+                const uniqueCourses = [...new Set(updatedCourses)]; 
+
+                console.log("Updated Courses:", uniqueCourses);
+
+            await updateDoc(carDocRef, {
+                courses: uniqueCourses,
+            });
+
+                console.log("Courses updated successfully!");
+            } else {
+                console.error("Document does not exist!");
+            }
         } catch (error) {
             console.error("Error updating document:", error);
         }
@@ -73,7 +97,7 @@ export default function CourseList({ course }) {
     return (
         <div className={`border-2 rounded-xl ${colState.type === "is-car-over" ? "border-[#4B0082]" : "border-transparent"}`}>
             <div
-                className={`flex flex-col relate border-box md:w-[200px] lg:w-[280px] max-h-full pb-[8px] rounded-xl bg-[#F1F2F4] align-top whitespace-normal scroll-m-[8px]`}
+                className={`flex flex-col relate border-box md:w-[200px] lg:w-[280px] max-h-full pb-[8px] rounded-xl bg-[#FAF7F5] align-top whitespace-normal scroll-m-[8px]`}
                 ref={columnRef}
             >
                 <div className="flex relative grow flex-wrap items-start justify-between px-[8px] pt-[8px]">
@@ -94,14 +118,25 @@ export default function CourseList({ course }) {
                         <div>{formatFirebaseTimestamp(end_date.seconds)}</div>
                     </div>
                 </div>
-                <div>
-                    {Object.entries(cars).map(([key, value]) => (
-                        <div className="flex gap-5">
-                            <div>{decodeKey(key)}</div>
-                            <div></div>
-                            <div>{value.number_of_students} hv</div>
-                        </div>
-                    ))}
+                <div className="p-2">
+                    <table className="min-w-full border-collapse bg-[#FAF7F5]">
+                        <thead className="bg-[#002933] text-[11px] text-white">
+                            <tr>
+                                <th className="border px-1 py-0.5 text-center text-sm w-[40%]">Biển số</th>
+                                <th className="border px-1 py-0.5 text-center text-sm w-[30%]">Học Viên</th>
+                                <th className="border px-1 py-0.5 text-center text-sm">Note</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {Object.entries(cars).map(([key, value]) => (
+                                <tr className="hover:text-[#fe3e64] hover:border-[#fe3e64]" key={key}>
+                                    <td className="text-[#808080]  px-2 pr-0.5 pl-0.1 text-left w-1/3">{decodeKey(key)}</td>
+                                    <td className="text-[#808080] px-1 py-0.5 text-center w-1/4">{value.number_of_students}</td>
+                                    <td className="text-[#808080] px-1 py-0.5 text-center">{value.note}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

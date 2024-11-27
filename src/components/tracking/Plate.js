@@ -6,7 +6,7 @@ import { preserveOffsetOnSource } from "@atlaskit/pragmatic-drag-and-drop/elemen
 import Tag from "./Tag";
 import { createPortal } from "react-dom";
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine";
-import { CalendarClock } from 'lucide-react';
+import { CalendarClock, User } from 'lucide-react';
 
 
 const colors = ['#EF9995', '#A4CBB4', '#DC8850', '#D97706']
@@ -17,38 +17,20 @@ const draggingState = { type: "dragging" };
 const PlatePrimitive = ({ car }) => {
     const { plate, expiry_date, owner_name, car_class, available_slot, current_slot, courses } = car;
     return (
-        <>
-            <div className="max-w-[130px] min-w-[90px] rounded text-xs">
-                <div className="flex bg-yellow-400 border-black border-t-2 border-l-2 border-b-2 px-2 py-1 rounded-tl w-full h-[28px] text-center items-center justify-center">
-                    <span className="font-mono font-bold">{plate}</span>
-                </div>
-                <div className="w-full min-w-full bg-slate-200 p-1 rounded-bl border-b-2 border-l-2 border-r-2 border-[#244855]">
-                    <div className="text-xs flex items-center gap-1">
-                        <span><CalendarClock className="w-[16px] h-[16px]"/></span>
-                        <span>{formatFirebaseTimestamp(expiry_date.seconds)}</span>
-                    </div>
-                    <div className="max-w-[70px] text-[13px] mt-1">{owner_name}</div>
-                </div>
+        <div className="border border-[#2E282A] text-[#282425] rounded-lg shadow-lg p-3.5 bg-[#E4D8B4] min-w-[140px] max-w-[150px]">
+            <h2 className="font-bold text-lg">{plate}</h2>
+            <p className="text-sm flex gap-1"><span><CalendarClock className="w-[16px] h-[16px]"/></span> {formatFirebaseTimestamp(expiry_date.seconds)}</p>
+            <p className="text-sm flex gap-1 overflow-hidden wrap">
+                <span><User className="w-[15px] h-[15px]"/></span>{owner_name}
+            </p>
+            <p className="text-sm ">Hạng: <span className="font-semibold">{car_class}</span></p>
+            <p className="text-sm">Số học viên: <span className="font-semibold">{current_slot}</span></p>
+            <div className={`flex flex-wrap max-w-full mt-1 ${courses?.length > 0 ? 'border-t border-[#2E282A] pt-1' : ''}`}>
+                {courses?.length > 0 && courses.map((course, index) => {
+                    return <Tag key={index} text={`${course}`} background={colors[index % colors.length]} />;
+                })}
             </div>
-            <div className="h-full text-base relative">
-                <div className="w-[35px] h-[28px] bg-white flex items-center justify-center border-t-2 border-r-2 border-b-2 border-black rounded-tr font-bold">
-                    <span className="text-[#003135]">{car_class}</span>
-                </div>
-                <div className="w-[35px] h-[30px] bg-slate-300 flex items-center justify-between border-r-2 border-b-2 border-[#244855] rounded-br text-sm font-medium relative">
-                    <span className="text-[#244855]">
-                        {current_slot}/{available_slot}
-                    </span>
-                    <div className="absolute top-0 left-9">
-                        <div className="flex flex-col text-[10px]">
-                            {courses?.length > 0 && courses.map((course, index) => {
-                                return <Tag text={`${course}`} background={colors[index % colors.length]} />
-                            })}
-                         
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </>
+        </div>
     );
 };
 
