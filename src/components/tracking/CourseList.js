@@ -97,7 +97,7 @@ export default function CourseList({ course }) {
     return (
         <div className={`border-2 rounded-xl ${colState.type === "is-car-over" ? "border-[#4B0082]" : "border-transparent"}`}>
             <div
-                className={`flex flex-col relate border-box md:w-[200px] lg:w-[280px] max-h-full pb-[8px] rounded-xl bg-[#FAF7F5] align-top whitespace-normal scroll-m-[8px]`}
+                className={`flex flex-col relate border-box md:w-[200px] lg:w-[280px] max-h-[40%] pb-[8px] rounded-xl bg-[#FAF7F5] align-top whitespace-normal scroll-m-[8px]`}
                 ref={columnRef}
             >
                 <div className="flex relative grow flex-wrap items-start justify-between px-[8px] pt-[8px]">
@@ -127,7 +127,7 @@ export default function CourseList({ course }) {
                                 <th className="border px-1 py-0.5 text-center text-sm">Note</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody className="">
                             {Object.entries(cars).map(([key, value]) => (
                                 <tr className="hover:text-[#fe3e64] hover:border-[#fe3e64]" key={key}>
                                     <td className="text-[#808080]  px-2 pr-0.5 pl-0.1 text-left w-1/3">{decodeKey(key)}</td>

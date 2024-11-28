@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@atlaskit/blanket": "^13.3.5",
+    "@atlaskit/button": "^20.3.2",
     "@atlaskit/calendar": "^15.1.0",
     "@atlaskit/datetime-picker": "^15.9.5",
     "@atlaskit/form": "^10.5.12",
