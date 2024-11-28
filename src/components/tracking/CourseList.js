@@ -7,6 +7,7 @@ import { MoveRight } from "lucide-react";
 import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import { arrayUnion } from "firebase/firestore/lite";
+import ProgressBar from "@atlaskit/progress-bar";
 
 const idle = { type: "idle" };
 const isCarOver = { type: "is-car-over" };
@@ -56,18 +57,18 @@ export default function CourseList({ course }) {
 
             if (carDocSnap.exists()) {
                 const carData = carDocSnap.data();
-                const currentCourses = carData.courses || []; 
+                const currentCourses = carData.courses || [];
 
                 console.log("Current Courses:", currentCourses);
 
-                const updatedCourses = [...currentCourses, ...[id]]; 
-                const uniqueCourses = [...new Set(updatedCourses)]; 
+                const updatedCourses = [...currentCourses, ...[id]];
+                const uniqueCourses = [...new Set(updatedCourses)];
 
                 console.log("Updated Courses:", uniqueCourses);
 
-            await updateDoc(carDocRef, {
-                courses: uniqueCourses,
-            });
+                await updateDoc(carDocRef, {
+                    courses: uniqueCourses,
+                });
 
                 console.log("Courses updated successfully!");
             } else {
@@ -90,6 +91,18 @@ export default function CourseList({ course }) {
         }
     };
 
+    const calculateProcess = () => {
+        const currentTimestamp = Date.now();
+        const startTimestamp = start_date.seconds * 1000;
+        const endTimestamp = end_date.seconds * 1000;
+
+        const totalDuration = endTimestamp - startTimestamp;
+        const elapsedTime = currentTimestamp - startTimestamp;
+
+        const progress = Math.max(0, Math.min(1, elapsedTime / totalDuration));
+        return progress;
+    };
+
     useEffect(() => {
         //console.log("drag over", id);
     }, [colState]);
@@ -110,12 +123,17 @@ export default function CourseList({ course }) {
                     <div className="w-[15px] h-[15px] mt-[10px] cursor-pointer">
                         <Pencil className="w-full h-full" />
                     </div>
-                    <div className="mx-auto mt-5 flex items-center gap-2">
-                        <div>{formatFirebaseTimestamp(start_date.seconds)}</div>
-                        <div>
-                            <MoveRight />
+                    <div className="mx-auto mt-5 flex flex-col items-center gap-2">
+                        <div className="flex gap-2">
+                            <div>{formatFirebaseTimestamp(start_date.seconds)}</div>
+                            <div>
+                                <MoveRight />
+                            </div>
+                            <div>{formatFirebaseTimestamp(end_date.seconds)}</div>
                         </div>
-                        <div>{formatFirebaseTimestamp(end_date.seconds)}</div>
+                        <div className={`w-[100%] h-[10px] ${calculateProcess() !== 1 ? "force-bar-color" : "force-bar-complete"}`}>
+                            <ProgressBar value={calculateProcess()} />
+                        </div>
                     </div>
                 </div>
                 <div className="p-2">

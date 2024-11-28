@@ -130,3 +130,11 @@ body,
 .modal-container.closing {
     animation: modalFall 0.2s ease-in-out forwards; /* Apply the fall animation */
 }
+
+.force-bar-color span {
+    background-color: #291334 !important;
+}
+
+.force-bar-complete span {
+    background-color: #1f845a !important;
+}
