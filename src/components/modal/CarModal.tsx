@@ -23,7 +23,6 @@ export default function CarModal(props: CarModalProps) {
 
     const handleClose = () => {
         setIsClosing(true);
-        console.log("WTF");
         setTimeout(() => {
             props.setTrigger(false);
             setIsClosing(false);
@@ -33,8 +32,8 @@ export default function CarModal(props: CarModalProps) {
     return props.trigger ? (
         <Fragment>
             <Blanket isTinted={true} testId="basic-blanket">
-                <div className={`modal-container ${isClosing ? "closing" : ""}`}>
-                    <section className="modal bg-[#FAF7F5]">
+                <div className={`modal-container w-[600px] ${isClosing ? "closing" : ""}`}>
+                    <section className="modal w-full bg-[#FAF7F5]">
                         <div className="flex relative items-center justify-between px-[1.5rem] pb-[1rem] pt-[1.5rem]">
                             <div className="grid grid-cols-2 w-full">
                                 <div className="flex border-box justify-start">

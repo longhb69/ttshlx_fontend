@@ -83,8 +83,13 @@ export default function Tracking() {
             return;
         }
         const filteredResults = cars.filter((car) => {
-            console.log(car.car_class, class_name);
-            return car.courses?.includes(class_name);
+            if(car.courses) {
+                return car.courses.some((course) => {
+                    if (course.name === class_name) console.log("Found", course.name)
+                    return course.name === class_name
+                })
+            }
+            return false
         });
         console.log(filteredResults);
 

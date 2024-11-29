@@ -8,6 +8,8 @@ import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import { arrayUnion } from "firebase/firestore/lite";
 import ProgressBar from "@atlaskit/progress-bar";
+import Button from "@atlaskit/button/new";
+import CourseModal from "../modal/CourseModal";
 
 const idle = { type: "idle" };
 const isCarOver = { type: "is-car-over" };
@@ -17,6 +19,7 @@ const decodeKey = (key) => key.replace(/_DOT_/g, ".");
 
 export default function CourseList({ course }) {
     const { id, state, start_date, end_date, cars } = course;
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const columnRef = useRef(null);
     const [colState, setColState] = useState(idle);
 
@@ -123,7 +126,7 @@ export default function CourseList({ course }) {
                 className={`flex flex-col h-full relate border-box w-[250px] max-h-[100%] pb-[8px] rounded-xl bg-[#FAF7F5] align-top whitespace-normal scroll-m-[8px]`}
                 ref={columnRef}
             >
-                <div className="flex relative grow flex-wrap items-start justify-between px-[8px] pt-[8px]">
+                <div className="flex relative justify-around  flex-wrap items-start px-[8px] pt-[8px]">
                     <div className="relative  flex items-start grow pt-[8px] px-[8px] shrink min-h-[35px] text-[#172b4d]">
                         <h2 className="block px-[6px] pr-[8px] bg-transparent text-[22px] font-semibold whitespace-normal leading-5">{id}</h2>
                     </div>
@@ -145,28 +148,15 @@ export default function CourseList({ course }) {
                             <ProgressBar value={calculateProcess()} />
                         </div>
                     </div>
-                </div>
-                <div className="p-2">
-                    {/* <table className="min-w-full border-collapse bg-[#FAF7F5]">
-                        <thead className="bg-[#002933] text-[11px] text-white">
-                            <tr>
-                                <th className="border px-1 py-0.5 text-center text-sm w-[40%]">Biển số</th>
-                                <th className="border px-1 py-0.5 text-center text-sm w-[30%]">Học Viên</th>
-                                <th className="border px-1 py-0.5 text-center text-sm">Note</th>
-                            </tr>
-                        </thead>
-                        <tbody className="">
-                            {Object.entries(cars).map(([key, value]) => (
-                                <tr className="hover:text-[#fe3e64] hover:border-[#fe3e64]" key={key}>
-                                    <td className="text-[#808080]  px-2 pr-0.5 pl-0.1 text-left w-1/3">{decodeKey(key)}</td>
-                                    <td className="text-[#808080] px-1 py-0.5 text-center w-1/4">{value.number_of_students}</td>
-                                    <td className="text-[#808080] px-1 py-0.5 text-center">{value.note}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table> */}
+                    <div className="w-full flex items-center justify-center mt-2">
+                        <div>
+                            <Button onClick={() => setIsModalOpen(true)}>Search</Button>
+                            <Button>Edit</Button>
+                        </div>
+                    </div>
                 </div>
             </div>
+            <CourseModal course={course} trigger={isModalOpen} setTrigger={setIsModalOpen}/>
         </div>
     );
 }
