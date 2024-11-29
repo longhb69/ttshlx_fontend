@@ -16,7 +16,7 @@ const draggingState = { type: "dragging" };
 const PlatePrimitive = ({ car }) => {
     const { plate, expiry_date, owner_name, car_class, available_slot, current_slot, courses } = car;
     return (
-        <div className="border border-[#2E282A] text-[#282425] rounded-lg shadow-lg p-3.5 bg-[#E4D8B4] min-w-[140px] max-h-[200px] max-w-[150px]">
+        <div className="border border-[#2E282A] text-[#282425] rounded-lg shadow-lg p-2 bg-[#E4D8B4] min-w-[140px] max-h-[200px] max-w-[150px]">
             <h2 className="font-bold text-lg">{plate}</h2>
             <p className="text-sm flex gap-1">
                 <span>
@@ -39,7 +39,7 @@ const PlatePrimitive = ({ car }) => {
             <div className={`flex flex-wrap max-w-full mt-1 ${courses?.length > 0 ? "border-t border-[#2E282A] pt-1" : ""}`}>
                 {courses?.length > 0 &&
                     courses.map((course, index) => {
-                        return <Tag key={index} text={`${course}`} background={colors[index % colors.length]} />;
+                        return <Tag key={index} text={`${course.name}`} number_of_students={course.number_of_students} background={colors[index % colors.length]} />;
                     })}
             </div>
         </div>

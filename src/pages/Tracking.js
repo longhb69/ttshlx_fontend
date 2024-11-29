@@ -94,7 +94,7 @@ export default function Tracking() {
     return (
         <>
             <div className="flex flex-col justify-between px-8 py-4 h-full bg-[#ECE3CA]">
-                <div className="flex nowrap h-[45%] min-h-[45%]">
+                <div className="flex nowrap h-[60%] min-h-[60%]">
                     <div className="flex flex-row gap-10 h-full w-full min-w-[300px] rounded pl-2.5 py-2.5 mb-5">
                         <ToolBar handleSearch={handleSearch} coursesName={coursesName} filterClass={filterClass} />
                         <div className="max-w-[85%] min-w-[75%] min-h-full max-h-full bg-[#E4D8B4] ">
@@ -121,17 +121,22 @@ export default function Tracking() {
                         </div>
                     </div>
                 </div>
-                <div className="flex flex-col mt-7 relative border-box w-[1200px] max-h-[70%] rounded mr-5 basis-[60%] justify-between overflow-hidden">
-                    <ol className="flex">
-                        {courses.length > 1 &&
-                            courses.map((course) => {
-                                return (
-                                    <li className="block shirk-0 px-[6px] h-full whitespace-nowrap">
-                                        <CourseList course={course} />
-                                    </li>
-                                );
-                            })}
-                    </ol>
+                <div className="flex mt-5 relative border-box w-full h-[50%] rounded mr-5 justify-between overflow-hidden">
+                    <div className="h-full w-[100%]">
+                        <ol className="flex flex-wrap h-full w-full gap-2">
+                            {courses.length > 1 &&
+                                courses.map((course) => {
+                                    return (
+                                        <li className="block shirk-0 px-[6px] h-full whitespace-nowrap">
+                                            <CourseList course={course} />
+                                        </li>
+                                    );
+                                })}
+                        </ol>
+                    </div>
+                    {/* <div className="w-[40%] h-full bg-[#FAF7F5] rounded">
+                        info
+                    </div> */}
                 </div>
             </div>
         </>

@@ -35,14 +35,14 @@ export default function CourseList({ course }) {
                     console.log(source.data);
                     AddCarToCourse(source.data.car.plate).then(() => {
                         console.log("update car");
-                        updateCarSlot(source.data.car.plate, 8, source.data.car.current_slot, source.data.car.available_slot);
+                        updateCarSlot(source.data.car.plate, 1, source.data.car.current_slot, source.data.car.available_slot);
                     });
                 },
             })
         );
     }, []);
 
-    const AddCarToCourse = async (plate, number_of_students = 8, note = "") => {
+    const AddCarToCourse = async (plate, number_of_students = 1, note = "") => {
         try {
             const courseDocRef = doc(db, "courses", id);
             const carDocRef = doc(db, "cars", plate);
@@ -59,15 +59,24 @@ export default function CourseList({ course }) {
                 const carData = carDocSnap.data();
                 const currentCourses = carData.courses || [];
 
-                console.log("Current Courses:", currentCourses);
+                const newCourseData = { name: id, number_of_students: number_of_students };
+                let updatedCourses;
+                let existingIndex;
 
-                const updatedCourses = [...currentCourses, ...[id]];
-                const uniqueCourses = [...new Set(updatedCourses)];
+                if (currentCourses.length === 0) {
+                    updatedCourses = [...currentCourses, newCourseData];
+                } else {
+                    console.log("current course is not emty")
+                    existingIndex = currentCourses.findIndex(course => course.name === id);
+                    if(existingIndex === 1) return
 
-                console.log("Updated Courses:", uniqueCourses);
+                    
+                    updatedCourses = [...currentCourses, newCourseData];
+                    console.log("Added new course");
+                }
 
                 await updateDoc(carDocRef, {
-                    courses: uniqueCourses,
+                    courses: updatedCourses,
                 });
 
                 console.log("Courses updated successfully!");
@@ -82,9 +91,10 @@ export default function CourseList({ course }) {
     const updateCarSlot = async (plate, slot_number, current_slot, available_slot) => {
         try {
             const newSlotNumber = (current_slot += slot_number);
+            console.log("new slot", newSlotNumber)
             const carDocRef = doc(db, "cars", plate);
             await updateDoc(carDocRef, {
-                current_slot: newSlotNumber <= available_slot ? newSlotNumber : available_slot,
+                current_slot: newSlotNumber,
             });
         } catch (error) {
             console.error("Error updating document:", error);
@@ -108,21 +118,21 @@ export default function CourseList({ course }) {
     }, [colState]);
 
     return (
-        <div className={`border-2 rounded-xl ${colState.type === "is-car-over" ? "border-[#4B0082]" : "border-transparent"}`}>
+        <div className={`border-2 rounded-xl h-full ${colState.type === "is-car-over" ? "border-[#4B0082]" : "border-transparent"}`}>
             <div
-                className={`flex flex-col relate border-box md:w-[200px] lg:w-[280px] max-h-[40%] pb-[8px] rounded-xl bg-[#FAF7F5] align-top whitespace-normal scroll-m-[8px]`}
+                className={`flex flex-col h-full relate border-box w-[250px] max-h-[100%] pb-[8px] rounded-xl bg-[#FAF7F5] align-top whitespace-normal scroll-m-[8px]`}
                 ref={columnRef}
             >
                 <div className="flex relative grow flex-wrap items-start justify-between px-[8px] pt-[8px]">
                     <div className="relative  flex items-start grow pt-[8px] px-[8px] shrink min-h-[35px] text-[#172b4d]">
-                        <h2 className="block px-[6px] pr-[8px] bg-transparent text-[25px] font-semibold whitespace-normal leading-5">{id}</h2>
+                        <h2 className="block px-[6px] pr-[8px] bg-transparent text-[22px] font-semibold whitespace-normal leading-5">{id}</h2>
                     </div>
                     <div className="inline-block text-base pt-[3px] pr-[8px]">
                         <div className="bg-green-300 text-green-800 px-2 py-1 rounded-full">{state}</div>
                     </div>
-                    <div className="w-[15px] h-[15px] mt-[10px] cursor-pointer">
+                    {/* <div className="w-[15px] h-[15px] mt-[10px] cursor-pointer">
                         <Pencil className="w-full h-full" />
-                    </div>
+                    </div> */}
                     <div className="mx-auto mt-5 flex flex-col items-center gap-2">
                         <div className="flex gap-2">
                             <div>{formatFirebaseTimestamp(start_date.seconds)}</div>
@@ -131,13 +141,13 @@ export default function CourseList({ course }) {
                             </div>
                             <div>{formatFirebaseTimestamp(end_date.seconds)}</div>
                         </div>
-                        <div className={`w-[100%] h-[10px] ${calculateProcess() !== 1 ? "force-bar-color" : "force-bar-complete"}`}>
+                        <div className={`w-[90%] h-[10px] ${calculateProcess() !== 1 ? "force-bar-color" : "force-bar-complete"}`}>
                             <ProgressBar value={calculateProcess()} />
                         </div>
                     </div>
                 </div>
                 <div className="p-2">
-                    <table className="min-w-full border-collapse bg-[#FAF7F5]">
+                    {/* <table className="min-w-full border-collapse bg-[#FAF7F5]">
                         <thead className="bg-[#002933] text-[11px] text-white">
                             <tr>
                                 <th className="border px-1 py-0.5 text-center text-sm w-[40%]">Biển số</th>
@@ -154,7 +164,7 @@ export default function CourseList({ course }) {
                                 </tr>
                             ))}
                         </tbody>
-                    </table>
+                    </table> */}
                 </div>
             </div>
         </div>
