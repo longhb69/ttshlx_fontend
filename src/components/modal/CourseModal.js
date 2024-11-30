@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import formatFirebaseTimestamp from "../../utils/formatFirebaseTimestamp";
 import { MoveRight, MoveLeft } from "lucide-react";
 import Button from "@atlaskit/button/new";
-import { getFirestore, doc, increment, updateDoc } from "firebase/firestore";
+import { getFirestore, doc, increment, getDoc, updateDoc, deleteField } from "firebase/firestore";
 
 const encodeKey = (key) => key.replace(/\./g, "_DOT_");
 const decodeKey = (key) => key.replace(/_DOT_/g, ".");
@@ -14,6 +14,7 @@ const NUMBER_TO_INCREASE = 1;
 export default function CourseModal(props) {
     const [isClosing, setIsClosing] = useState(false);
     const db = getFirestore();
+    const docRef = doc(db, "courses", props.course.id);
 
     const handleClose = () => {
         setIsClosing(true);
@@ -23,13 +24,99 @@ export default function CourseModal(props) {
         }, 200);
     };
 
-    const decreaseStudent = () => {};
+    const deleteCourseInCar = async (key) => {
+        const docRef = doc(db, "cars", decodeKey(key));
+        const docSnap = await getDoc(docRef);
+        if(docSnap.exists()) {
+            const data = docSnap.data();
+            const courses = data.courses || [];
 
-    const increaseStudent = (key) => {
+            const updatedCourses = courses
+                .map(course => {
+                    if (course.name === props.course.id) {
+                        console.log("Found course name", decodeKey(key))
+                        return null
+                    }
+                    else {
+                        return course
+                    }
+                }).filter(course => course !== null);
+
+            await updateDoc(docRef, { current_slot: 0, courses: updatedCourses });
+        }
+    }
+
+    const decreaseStudent = async (key) => {
+        const CardocRef = doc(db, "cars", decodeKey(key))
+        const docCarSnap = await getDoc(CardocRef);
+
+        try {
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                const currentValue = data["cars"][key]["number_of_students"] || 0;
+                if (currentValue - 1 > 0) {
+                    const dynamicPath = `cars.${key}.number_of_students`;
+                    await updateDoc(docRef, {
+                        [dynamicPath]: increment(-1),
+                    });
+                    if(docCarSnap.exists()) {
+                        await updateDoc(CardocRef, {
+                            current_slot: increment(-1)
+                        })
+                    }
+                    console.log(`Decrement successful: number_of_students is now updated.`);
+                } else {
+                    await updateDoc(docRef, {
+                        [`cars.${key}`] : deleteField()     
+                    })
+                    console.log(`Key "${decodeKey(key)}" removed successfully!`);
+                    deleteCourseInCar(key)
+                }
+            }
+        } catch(error) {
+            console.log("Document does not exist!");
+        }
+    };
+
+    const increaseStudent = async (key) => {
         const docRef = doc(db, "courses", props.course.id);
         updateDoc(docRef, {
             [`cars.${key}.number_of_students`]: increment(NUMBER_TO_INCREASE),
         });
+
+        try {
+            const docRef = doc(db, "cars", decodeKey(key));
+            const docSnap = await getDoc(docRef);
+            if(docSnap.exists()) {
+                const data = docSnap.data()
+                const courses = data.courses || []
+
+                console.log(courses)
+                const updatedCourses = courses.map(course => {
+                    if (course.name === props.course.id) {
+                        console.log("Found course name", decodeKey(key))
+                        return {
+                            ...course,
+                            number_of_students: (course.number_of_students || 0) + NUMBER_TO_INCREASE
+                        };
+                    } else {
+                        console.log("Not found course ", decodeKey(key))
+                        return course;
+                    }
+                })
+
+                console.log(updatedCourses)
+
+                await updateDoc(docRef, { current_slot: increment(1), courses: updatedCourses });
+                console.log(`Updated number_of_students for course: ${decodeKey(key)}`);
+            }
+            else {
+                console.log(`NOT FOUND course: ${decodeKey(key)}`);
+            }
+        } catch (error) {
+            console.log("Document does not exist!");
+        }
     };
 
     useEffect(() => {}, [props.course]);
@@ -79,35 +166,37 @@ export default function CourseModal(props) {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {Object.entries(props.course.cars).map(([key, value]) => (
-                                            <tr className="hover:bg-[#f0f0f0] transition-colors duration-200" key={key}>
-                                                <td className="border px-2 py-1 text-gray-800 text-base" style={{ width: "20%" }}>
-                                                    {decodeKey(key)}
-                                                </td>
-                                                <td className="border px-2 py-1 text-gray-800 text-center" style={{ width: "20%" }}>
-                                                    <div className="flex items-center justify-evenly">
-                                                        <div>
+                                        {Object.entries(props.course.cars)
+                                            .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
+                                            .map(([key, value]) => (
+                                                <tr className="hover:bg-[#f0f0f0] transition-colors duration-200" key={key}>
+                                                    <td className="border px-2 py-1 text-gray-800 text-base" style={{ width: "20%" }}>
+                                                        {decodeKey(key)}
+                                                    </td>
+                                                    <td className="border px-2 py-1 text-gray-800 text-center" style={{ width: "20%" }}>
+                                                        <div className="flex items-center justify-evenly">
+                                                            <div>
+                                                                <div className="w-[30px] h-[30px] flex items-center justify-center hover:bg-[#111111]/[.2]  rounded transition-colors duration-200">
+                                                                    <button onClick={() => decreaseStudent(key)} className="w-full h-full">
+                                                                        <span className="text-lg">-</span>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                            <div>
+                                                                <span className="text-lg font-semibold">{value.number_of_students}</span>
+                                                            </div>
                                                             <div className="w-[30px] h-[30px] flex items-center justify-center hover:bg-[#111111]/[.2]  rounded transition-colors duration-200">
-                                                                <button onClick={() => decreaseStudent()} className="w-full h-full">
-                                                                    <span className="text-lg">-</span>
+                                                                <button className="w-full h-full" onClick={() => increaseStudent(key)}>
+                                                                    +
                                                                 </button>
                                                             </div>
                                                         </div>
-                                                        <div>
-                                                            <span className="text-lg font-semibold">{value.number_of_students}</span>
-                                                        </div>
-                                                        <div className="w-[30px] h-[30px] flex items-center justify-center hover:bg-[#111111]/[.2]  rounded transition-colors duration-200">
-                                                            <button className="w-full h-full" onClick={() => increaseStudent(key)}>
-                                                                +
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td className="border px-2 py-1 text-gray-800" style={{ width: "50%" }}>
-                                                    {value.note}
-                                                </td>
-                                            </tr>
-                                        ))}
+                                                    </td>
+                                                    <td className="border px-2 py-1 text-gray-800" style={{ width: "50%" }}>
+                                                        {value.note}
+                                                    </td>
+                                                </tr>
+                                            ))}
                                     </tbody>
                                 </table>
                             </div>

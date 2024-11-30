@@ -20,6 +20,7 @@ export default function Tracking() {
     const [coursesName, setCoursesName] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [filterCar, setFilterCar] = useState([]);
+    const [currentFilterClass, setCurrentFilterClass] = useState("")
 
     const teachersCollectionRef = collection(db, "teachers");
     const carsCollectionRef = collection(db, "cars");
@@ -80,6 +81,7 @@ export default function Tracking() {
         setFilterCar([]);
         if (class_name.trim() === "") {
             setFilterCar([]);
+            setCurrentFilterClass("")
             return;
         }
         const filteredResults = cars.filter((car) => {
@@ -91,10 +93,15 @@ export default function Tracking() {
             }
             return false
         });
-        console.log(filteredResults);
-
+        setCurrentFilterClass(class_name)
         setFilterCar(filteredResults);
     };
+
+    useEffect(() => {
+        if(filterCar.length > 0) {
+            filterClass(currentFilterClass)
+        }
+    }, [cars])
 
     return (
         <>
