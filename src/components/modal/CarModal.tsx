@@ -1,11 +1,14 @@
 import { useEffect, useState, Fragment } from "react";
 import Blanket from "@atlaskit/blanket";
-import { Frown, X } from "lucide-react";
+import { X } from "lucide-react";
 import Form, { Field, ErrorMessage, FormFooter } from "@atlaskit/form";
 import { DatePicker, DateTimePicker } from "@atlaskit/datetime-picker";
 import { RadioGroup } from "@atlaskit/radio";
 import Textfield from "@atlaskit/textfield";
+import { collection, doc, addDoc, setDoc, Timestamp, serverTimestamp } from "firebase/firestore";
+import { db } from "../../config/firebase";
 import React from "react";
+import Button from "../Button";
 
 interface CarModalProps {
     trigger: boolean;
@@ -18,8 +21,30 @@ const validateField = (value?: string) => {
     }
 };
 
+const CarsRef = collection(db, "cars");
+
 export default function CarModal(props: CarModalProps) {
     const [isClosing, setIsClosing] = useState(false);
+
+    const handleAddCar = async (data) => {
+        const docRef = doc(db, "cars", data.plate);
+        try {
+            await setDoc(docRef, {
+                available_slot: 8,
+                car_class: data.car_class,
+                courses: [],
+                current_slot: 0,
+                expiry_date: Timestamp.fromDate(new Date(data.expiry_date)),
+                owner_name: data.teacher,
+                plate: data.plate,
+                createdAt: serverTimestamp(),
+            });
+            handleClose();
+            console.log("Document added with ID:", docRef.id);
+        } catch (error) {
+            console.error("Error adding document: ", error);
+        }
+    };
 
     const handleClose = () => {
         setIsClosing(true);
@@ -60,11 +85,7 @@ export default function CarModal(props: CarModalProps) {
                                 flexDirection: "column",
                             }}
                         >
-                            <Form
-                                onSubmit={(data) => {
-                                    console.log("form data", data);
-                                }}
-                            >
+                            <Form onSubmit={(data) => handleAddCar(data)}>
                                 {({ formProps }: any) => (
                                     <form {...formProps}>
                                         <Field label="Biển số" name="plate">
@@ -74,7 +95,7 @@ export default function CarModal(props: CarModalProps) {
                                                 </Fragment>
                                             )}
                                         </Field>
-                                        <Field name="datepicker-validation" label="Start day" validate={validateField} isRequired defaultValue="">
+                                        <Field name="expiry_date" label="Start day" validate={validateField} isRequired defaultValue="">
                                             {({ fieldProps, error, meta: { valid } }) => (
                                                 <>
                                                     <DatePicker
@@ -118,7 +139,7 @@ export default function CarModal(props: CarModalProps) {
                                             )}
                                         </Field>
                                         <FormFooter>
-                                            <button type="submit">Submit</button>
+                                            <Button type="submit">Thêm mới</Button>
                                         </FormFooter>
                                     </form>
                                 )}

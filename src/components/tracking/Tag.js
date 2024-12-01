@@ -1,10 +1,26 @@
-export default function Tag({ text, number_of_students, background }) {
-    return (
-        <span
-            className={`inline-flex items-center text-[14px] font-semibold min-w-0 h-[15px] mx-[2px] my-[4px] p-0 relative rouned cursor-default rounded text-[#282425]`}
-            style={{ backgroundColor: background }}
-        >
-            <span className="overflow-hidden px-[4px] overflow-ellipsis nowrap">{text} <span>:</span> {number_of_students}</span>
-        </span>
-    );
-}
+import React from "react";
+
+const Tag = React.memo(
+    ({ text, number_of_students, background }) => {
+        return (
+            <div
+                className={`items-center text-[14px] p-1 font-semibold relative rounded cursor-default text-[#282425]`}
+                style={{ backgroundColor: background }}
+            >
+                <span className="overflow-hidden overflow-ellipsis nowrap">
+                    {text} <span>:</span> {number_of_students}
+                </span>
+            </div>
+        );
+    },
+    (prevProps, nextProps) => {
+        // Custom comparison logic (optional)
+        return (
+            prevProps.text === nextProps.text &&
+            prevProps.number_of_students === nextProps.number_of_students &&
+            prevProps.background === nextProps.background
+        );
+    }
+);
+
+export default Tag;
