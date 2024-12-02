@@ -36,7 +36,7 @@ export default function ToolBar({ handleSearch, coursesName, filterClass }) {
                 <input
                     type="text"
                     placeholder="Tìm kiếm xe..."
-                    className="mb-2 p-2 border rounded w-[180px] h-[35px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="mb-2 p-2 border rounded-lg w-[180px] h-[35px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                     onChange={(e) => handleSearch(e.target.value)}
                 />
                 <div className="relative">

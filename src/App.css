@@ -63,6 +63,14 @@ body,
     animation: modalRise 0.3s ease-in-out forwards;
 }
 
+.option-container {
+    transition-duration: 150ms;
+    transition-property: transform;
+    transition-timing-function: cubic-bezier(0.15, 1, 0.3, 1);
+    transform: translateY(20px);
+    animation: modalRise 0.15s ease-in-out forwards;
+}
+
 @media (min-width: 30rem) {
     .modal {
         max-height: inherit;

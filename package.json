@@ -10,6 +10,7 @@
     "@atlaskit/form": "^10.5.12",
     "@atlaskit/modal-dialog": "^12.17.13",
     "@atlaskit/pragmatic-drag-and-drop": "^1.4.0",
+    "@atlaskit/pragmatic-drag-and-drop-react-accessibility": "^1.2.2",
     "@atlaskit/progress-bar": "^3.0.1",
     "@atlaskit/radio": "^6.6.0",
     "@atlaskit/tag": "^12.6.6",
