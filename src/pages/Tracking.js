@@ -12,11 +12,13 @@ import Header from "../components/board/Header.js";
 import Button from "@atlaskit/button/new";
 import { Filter } from "lucide-react";
 import ToolBar from "../components/tracking/ToolBar.js";
+import Notes from "../components/tracking/Notes.js";
 
 export default function Tracking() {
     const [teacherList, setTeacherList] = useState([]);
     const [cars, setCars] = useState([]);
     const [courses, setCourses] = useState([]);
+    const [notes, setNotes] = useState([]);
     const [coursesName, setCoursesName] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [filterCar, setFilterCar] = useState([]);
@@ -25,6 +27,7 @@ export default function Tracking() {
     const teachersCollectionRef = collection(db, "teachers");
     const carsCollectionRef = collection(db, "cars");
     const coursesCollectionRef = collection(db, "courses");
+    const notesCollectionRef = collection(db, "notes");
     const addCarModalRef = useRef();
 
     useEffect(() => {
@@ -58,6 +61,20 @@ export default function Tracking() {
     }, []);
 
     useEffect(() => {
+        const unsubscribe = onSnapshot(
+            notesCollectionRef,
+            (querySnapshot) => {
+                setNotes(querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+            },
+            (error) => {
+                console.error("Error fetching real-time updates in notes:", error);
+            }
+        );
+
+        return () => unsubscribe();
+    }, []);
+
+    useEffect(() => {
         setCoursesName(
             courses.map((course) => {
                 return course.id;
@@ -71,33 +88,36 @@ export default function Tracking() {
             return;
         }
         const filteredResults = cars.filter((car) => {
-            return car.plate.includes(searchTerm);
+            return car.plate.includes(searchTerm) || car.owner_name.toLowerCase().includes(searchTerm.toLowerCase());
         });
 
         console.log(filteredResults);
         setFilterCar(filteredResults);
     };
 
-    const filterClass = (class_name) => {
+    const filterClass = (tags) => {
         setFilterCar([]);
-        if (class_name.trim() === "") {
-            setFilterCar([]);
-            setCurrentFilterClass("");
-            return;
-        }
-        const filteredResults = cars.filter((car) => {
-            if (car.courses) {
-                return car.courses.some((course) => {
-                    if (course.name === class_name) console.log("Found", course.name);
-                    return course.name === class_name;
-                });
-            }
-            return false;
+        let filteredResults = [];
+        tags.forEach((tag) => {
+            const filter = cars.filter((car) => {
+                if (car.courses) {
+                    return car.courses.some((course) => {
+                        if (course.name === tag) console.log("Found", course.name);
+                        return course.name === tag;
+                    });
+                }
+                return false;
+            });
+            filteredResults.push(...filter);
         });
-        setCurrentFilterClass(class_name);
+
+        setCurrentFilterClass(tags);
         setFilterCar(filteredResults);
     };
-
+    const filterByNote = (id) => {
+        const filteredNote = notes.filter((note) => note.id === id);
+        console.log(filteredNote);
+    };
     useEffect(() => {
         if (filterCar.length > 0) {
             filterClass(currentFilterClass);
@@ -109,17 +129,7 @@ export default function Tracking() {
             <div className="flex flex-col justify-between px-8 py-4 h-full bg-[#ECE3CA]">
                 <div className="flex nowrap h-[60%] min-h-[60%]">
                     <div className="flex flex-row gap-5 h-full w-full min-w-[300px] rounded pl-2.5 py-2.5 mb-5">
-                        <div className="w-[10%] bg-[#E4D8B4] p-2 text-ellipsis text-[14px] font-semibold rounded">
-                            <div className="flex p-[6px] justify-between mb-2">
-                                <span>Ghi Chú</span>
-                                <div className="cursor-pointer w-[20px] h-[20px] hover:text-[#EF9995] transition duration-75">
-                                    <Pencil className="w-full h-full" />
-                                </div>
-                            </div>
-                            <div className="bg-[#111111]/[.1] hover:bg-transparent cursor-pointer p-1 rounded-md">
-                                CẤP MỚI T10.24 hv theo thứ tự thì sd xe
-                            </div>
-                        </div>
+                        {notes.length > 0 ? <Notes notes={notes} filterByNote={filterByNote} /> : null}
                         <ToolBar handleSearch={handleSearch} coursesName={coursesName} filterClass={filterClass} />
                         <div className="max-w-[85%] min-w-[70%] min-h-full overflow-hidden max-h-full bg-[#E4D8B4] ">
                             <ol className={`px-4 h-full min-h-full w-full overflow-y-scroll plate-scroll rounded-md shadow-md`}>

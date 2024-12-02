@@ -25,6 +25,7 @@ const PlatePrimitive = ({ car }) => {
     const [isOption, setIsOption] = useState(false);
     const optionRef = useRef(null);
     const [editTrigger, setEditTrigger] = useState(false);
+    const [isExpired, setIsExpired] = useState(expiry_date.seconds * 1000 < Date.now());
 
     //to do delete in course also
     const handleDelete = async () => {
@@ -53,11 +54,11 @@ const PlatePrimitive = ({ car }) => {
     return (
         <>
             <h2 className="text-[0.9rem] font-semibold w-[10%]">{plate}</h2>
-            <p className="text-sm flex gap-1 w-[10%]">
-                <span>
+            <p className="text-sm flex items-center gap-1 w-[10%]">
+                <span className={isExpired ? "text-red-500" : ""}>
                     <CalendarClock className="w-[16px] h-[16px]" />
                 </span>{" "}
-                {formatFirebaseTimestamp(expiry_date.seconds)}
+                <span className={isExpired ? "text-red-500" : ""}>{formatFirebaseTimestamp(expiry_date.seconds)}</span>
             </p>
             <p className="text-sm flex gap-1 overflow-hidden wrap w-[10%]">
                 <span>
