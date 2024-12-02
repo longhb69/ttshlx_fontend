@@ -27,10 +27,10 @@ export default function ToolBar({ handleSearch, coursesName, filterClass }) {
 
     return (
         <div className="h-full flex flex-col">
-            <div className="h-[10%] bg-[#E4D8B4] shadow">
-                <Button>B11</Button>
-                <Button>B1+B2</Button>
-                <Button>C</Button>
+            <div className="h-[10%] flex items-center justify-center bg-[#E4D8B4] font-semibold rounded shadow">
+                <div className="w-[33%] hover:bg-[#111111]/[.1] flex items-center justify-center h-full cursor-pointer text-[#111111]/[.8]">B11</div>
+                <div className="w-[33%] hover:bg-[#111111]/[.1] flex items-center justify-center h-full cursor-pointer text-[#111111]/[.8]">B1+B2</div>
+                <div className="w-[33%] bg-[#2E282A] text-white flex items-center justify-center h-full cursor-pointer">C</div>
             </div>
             <div className=" flex flex-col h-[90%] p-2 mt-5 rounded-md gap-2 bg-[#E4D8B4] shadow" ref={ref}>
                 <input
@@ -58,9 +58,9 @@ export default function ToolBar({ handleSearch, coursesName, filterClass }) {
                             </ul>
                         </div>
                     )}
-                </div>
-                <div>
-                    <button onClick={() => handleSearch("")}>reset</button>
+                    <div className="">
+                        <button onClick={() => handleSearch("")}>X</button>
+                    </div>
                 </div>
                 <button
                     onClick={() => setIsModalOpen(true)}

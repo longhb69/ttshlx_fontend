@@ -61,8 +61,21 @@ export default function CourseModal(props) {
                         [dynamicPath]: increment(-1),
                     });
                     if(docCarSnap.exists()) {
+                        const data = docCarSnap.data()
+                        const courses = data.courses || []
+                        const updatedCourses = courses.map(course => {
+                            if (course.name === props.course.id) {
+                                return {
+                                    ...course,
+                                    number_of_students: (course.number_of_students || 0) - 1
+                                };
+                            } else {
+                                return course;
+                            }
+                        })
                         await updateDoc(CardocRef, {
-                            current_slot: increment(-1)
+                            current_slot: increment(-1),
+                            courses: updatedCourses
                         })
                     }
                     console.log(`Decrement successful: number_of_students is now updated.`);
@@ -92,16 +105,13 @@ export default function CourseModal(props) {
                 const data = docSnap.data()
                 const courses = data.courses || []
 
-                console.log(courses)
                 const updatedCourses = courses.map(course => {
                     if (course.name === props.course.id) {
-                        console.log("Found course name", decodeKey(key))
                         return {
                             ...course,
                             number_of_students: (course.number_of_students || 0) + NUMBER_TO_INCREASE
                         };
                     } else {
-                        console.log("Not found course ", decodeKey(key))
                         return course;
                     }
                 })
