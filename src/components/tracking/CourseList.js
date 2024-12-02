@@ -71,7 +71,8 @@ export default function CourseList({ course }) {
                 } else {
                     console.log("current course is not emty")
                     existingIndex = currentCourses.findIndex(course => course.name === id);
-                    if(existingIndex === 1) return
+                    console.log("check", existingIndex)
+                    if(existingIndex !== -1) return
 
                     
                     updatedCourses = [...currentCourses, newCourseData];

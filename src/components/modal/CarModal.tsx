@@ -95,7 +95,7 @@ export default function CarModal(props: CarModalProps) {
                                                 </Fragment>
                                             )}
                                         </Field>
-                                        <Field name="expiry_date" label="Start day" validate={validateField} isRequired defaultValue="">
+                                        <Field name="expiry_date" label="Ngày hết đăng kiểm" validate={validateField} isRequired defaultValue="">
                                             {({ fieldProps, error, meta: { valid } }) => (
                                                 <>
                                                     <DatePicker

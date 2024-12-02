@@ -52,7 +52,7 @@ const PlatePrimitive = ({ car }) => {
 
     return (
         <>
-            <h2 className="font-bold w-[10%]">{plate}</h2>
+            <h2 className="text-[0.9rem] font-semibold w-[10%]">{plate}</h2>
             <p className="text-sm flex gap-1 w-[10%]">
                 <span>
                     <CalendarClock className="w-[16px] h-[16px]" />
@@ -165,7 +165,7 @@ export default function Plate({ car }) {
 const PlatePreview = ({ rect, car }) => {
     return (
         <div className="border mt-2 flex gap-4 items-center overflow-hidden border-[#2E282A] text-[#282425] rounded-lg shadow-lg p-2 bg-[#E4D8B4] w-[200px] h-full">
-            <h2 className="font-bold">{car.plate}</h2>
+            <h2 className="font-semibold text-[0.9rem]">{car.plate}</h2>
             <div className="">{car.owner_name}</div>
         </div>
     );
