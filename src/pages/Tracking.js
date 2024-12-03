@@ -23,6 +23,8 @@ export default function Tracking() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [filterCar, setFilterCar] = useState([]);
     const [currentFilterClass, setCurrentFilterClass] = useState("");
+    const [currentNoteId, setCurrentNoteId] = useState("");
+    const [tags, setTags] = useState([]);
 
     const teachersCollectionRef = collection(db, "teachers");
     const carsCollectionRef = collection(db, "cars");
@@ -115,8 +117,26 @@ export default function Tracking() {
         setFilterCar(filteredResults);
     };
     const filterByNote = (id) => {
+        setFilterCar([]);
+        setTags([]);
+        if (currentNoteId === id) {
+            setCurrentNoteId("");
+            return;
+        }
+        setCurrentNoteId(id);
         const filteredNote = notes.filter((note) => note.id === id);
-        console.log(filteredNote);
+        const filteredResults = cars.filter((car) => {
+            return filteredNote[0].cars.includes(car.plate);
+        });
+        if (filteredResults.length === 0) {
+            setFilterCar([]);
+        } else {
+            setFilterCar(filteredResults);
+        }
+        console.log(filteredResults);
+    };
+    const resetNote = () => {
+        setCurrentNoteId("");
     };
     useEffect(() => {
         if (filterCar.length > 0) {
@@ -128,9 +148,16 @@ export default function Tracking() {
         <>
             <div className="flex flex-col justify-between px-8 py-4 h-full bg-[#ECE3CA]">
                 <div className="flex nowrap h-[60%] min-h-[60%]">
-                    <div className="flex flex-row gap-5 h-full w-full min-w-[300px] rounded pl-2.5 py-2.5 mb-5">
-                        {notes.length > 0 ? <Notes notes={notes} filterByNote={filterByNote} /> : null}
-                        <ToolBar handleSearch={handleSearch} coursesName={coursesName} filterClass={filterClass} />
+                    <div className="flex flex-row gap-5 h-full w-full min-w-[300px] rounded py-2.5 mb-5">
+                        {notes.length > 0 ? <Notes notes={notes} filterByNote={filterByNote} currentNoteId={currentNoteId} /> : null}
+                        <ToolBar
+                            handleSearch={handleSearch}
+                            coursesName={coursesName}
+                            filterClass={filterClass}
+                            tags={tags}
+                            setTags={setTags}
+                            resetNote={resetNote}
+                        />
                         <div className="max-w-[85%] min-w-[70%] min-h-full overflow-hidden max-h-full bg-[#E4D8B4] ">
                             <ol className={`px-4 h-full min-h-full w-full overflow-y-scroll plate-scroll rounded-md shadow-md`}>
                                 {filterCar.length > 0
@@ -156,7 +183,15 @@ export default function Tracking() {
                     </div>
                 </div>
                 <div className="flex mt-5 relative border-box w-full h-[50%] rounded mr-5 justify-between overflow-hidden">
-                    <div className="h-full w-[100%]">
+                    <div className="flex h-full w-[100%]">
+                        <div
+                            className="h-full bg-[#111111]/[.2]  w-[28px] rounded flex items-center cursor-pointer mr-4 transition-colors duration-100 hover:bg-[#2E282A] hover:text-white"
+                            title="Thêm khóa học"
+                        >
+                            <span className="w-full">
+                                <Plus className="w-full h-full" />
+                            </span>
+                        </div>
                         <ol className="flex flex-wrap h-full w-full gap-2">
                             {courses.length > 1 &&
                                 courses.map((course) => {

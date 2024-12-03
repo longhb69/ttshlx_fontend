@@ -69,12 +69,11 @@ export default function CourseList({ course }) {
                 if (currentCourses.length === 0) {
                     updatedCourses = [...currentCourses, newCourseData];
                 } else {
-                    console.log("current course is not emty")
-                    existingIndex = currentCourses.findIndex(course => course.name === id);
-                    console.log("check", existingIndex)
-                    if(existingIndex !== -1) return
+                    console.log("current course is not emty");
+                    existingIndex = currentCourses.findIndex((course) => course.name === id);
+                    console.log("check", existingIndex);
+                    if (existingIndex !== -1) return;
 
-                    
                     updatedCourses = [...currentCourses, newCourseData];
                     console.log("Added new course");
                 }
@@ -95,7 +94,7 @@ export default function CourseList({ course }) {
     const updateCarSlot = async (plate, slot_number, current_slot, available_slot) => {
         try {
             const newSlotNumber = (current_slot += slot_number);
-            console.log("new slot", newSlotNumber)
+            console.log("new slot", newSlotNumber);
             const carDocRef = doc(db, "cars", plate);
             await updateDoc(carDocRef, {
                 current_slot: newSlotNumber,
@@ -122,7 +121,10 @@ export default function CourseList({ course }) {
     }, [colState]);
 
     return (
-        <div className={`border-2 rounded-xl h-full ${colState.type === "is-car-over" ? "border-[#4B0082]" : "border-transparent"}`}>
+        <div
+            className={`border-2 rounded-xl cursor-pointer h-full ${colState.type === "is-car-over" ? "border-[#4B0082]" : "border-transparent"}`}
+            onClick={() => setIsModalOpen(true)}
+        >
             <div
                 className={`flex flex-col h-full relate border-box w-[250px] max-h-[100%] pb-[8px] rounded-xl bg-[#FAF7F5] align-top whitespace-normal scroll-m-[8px]`}
                 ref={columnRef}
@@ -150,14 +152,11 @@ export default function CourseList({ course }) {
                         </div>
                     </div>
                     <div className="w-full flex items-center justify-center mt-2">
-                        <div>
-                            <Button onClick={() => setIsModalOpen(true)}>Search</Button>
-                            <Button>Edit</Button>
-                        </div>
+                        <div></div>
                     </div>
                 </div>
             </div>
-            <CourseModal course={course} trigger={isModalOpen} setTrigger={setIsModalOpen}/>
+            <CourseModal course={course} trigger={isModalOpen} setTrigger={setIsModalOpen} />
         </div>
     );
 }
