@@ -142,12 +142,15 @@ export default function CourseModal(props) {
                                     <div className="flex border-box justify-start">
                                         <h1 className="text-[#172B4D] text-[25px] font-semibold">{props.course.id}</h1>
                                     </div>
-                                    <div className="flex gap-2">
-                                        <div>{formatFirebaseTimestamp(props.course.start_date.seconds)}</div>
+                                    <div className="flex gap-5">
                                         <div>
-                                            <MoveRight />
+                                            <span className="text-sm">Từ Ngày: </span>
+                                            {formatFirebaseTimestamp(props.course.start_date.seconds)}
                                         </div>
-                                        <div>{formatFirebaseTimestamp(props.course.end_date.seconds)}</div>
+                                        <div>
+                                            <span className="text-sm">Đến Ngày: </span>
+                                            {formatFirebaseTimestamp(props.course.end_date.seconds)}
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="inline-block text-base pt-[3px] pr-[8px]">
