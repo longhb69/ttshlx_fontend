@@ -7,11 +7,10 @@ import CarModal from "../modal/CarModal.tsx";
 import Tag from "@atlaskit/tag";
 import TagGroup from "@atlaskit/tag-group";
 
-export default function ToolBar({ handleSearch, coursesName, filterClass }) {
+export default function ToolBar({ handleSearch, coursesName, filterClass, tags, setTags, resetNote }) {
     const ref = useRef(null);
     const [isOpen, setIsOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [tags, setTags] = useState([]);
 
     const handleClickOutside = () => {
         setIsOpen(false);
@@ -22,6 +21,7 @@ export default function ToolBar({ handleSearch, coursesName, filterClass }) {
     };
 
     const handleSelectOption = (name) => {
+        resetNote();
         if (!tags.includes(name)) {
             setTags([...tags, name]);
         }
