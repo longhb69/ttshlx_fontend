@@ -144,3 +144,20 @@ body,
 .force-bar-complete span {
     background-color: #1f845a !important;
 }
+
+.custom-scrollbar {
+    scrollbar-color: #fff6 #00000026;
+    scrollbar-width: auto;
+}
+.scrollbar-hidden {
+    scrollbar-width: none; /* For Firefox */
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+    display: none; /* For Chrome, Safari, and Opera */
+}
+
+.test {
+    overflow-x: visible;
+    overflow-y: scroll;
+}

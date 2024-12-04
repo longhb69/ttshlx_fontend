@@ -29,15 +29,15 @@ export default function NoteItems({ note, editMode, setEditMode, filterByNote, c
                 if (!editMode) filterByNote(note.id);
             }}
             className={`${
-                note.id === currentNoteId ? "bg-[#2E282A] text-white" : "bg-[#111111]/[.1] hover:bg-transparent"
-            } flex justify-between items-center bg-[#111111]/[.1] mb-2  cursor-pointer p-1 rounded-md relative`}
+                note.id === currentNoteId ? "bg-[#2E282A] text-white" : "bg-[#111111]/[.1] hover:bg-transparent static"
+            } flex justify-between items-center bg-[#111111]/[.1] mb-2  cursor-pointer p-1 rounded-md select-none relative`}
         >
             <div>{note.content}</div>
             {editMode ? (
                 <div className="w-[12%] h-[12%] relative" ref={optionRef}>
                     <Ellipsis className="w-full h-full" onClick={() => setIsOption(!isOption)} />
                     {isOption ? (
-                        <div className="absolute bg-white border text-sm rounded z-[100] shadow-lg top-full p-2 -right-8 option-container">
+                        <div className="absolute bg-white border text-sm rounded z-[9999999] shadow-lg top-full p-2 -right-1 option-container">
                             <div className="hover:bg-[#111111]/[.1] text-slate-800 p-2 rounded flex items-center" onClick={() => handleDelete()}>
                                 <span className="w-[20px] h-[20px] mr-5">
                                     <Trash2 className="w-full h-full" />

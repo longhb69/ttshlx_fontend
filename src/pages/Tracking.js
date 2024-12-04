@@ -13,9 +13,11 @@ import Button from "@atlaskit/button/new";
 import { Filter } from "lucide-react";
 import ToolBar from "../components/tracking/ToolBar.js";
 import Notes from "../components/tracking/Notes.js";
-import AddCourseModal from "../components/modal/AddCourseModal.tsx"
+import ScrollableList from "../components/ScrollableList.tsx";
+//import AddCourseModal from "../components/modal/AddCourseModal.tsx"
 
 export default function Tracking() {
+    const [currentClass, setCurrentClass] = useState("C");
     const [teacherList, setTeacherList] = useState([]);
     const [cars, setCars] = useState([]);
     const [courses, setCourses] = useState([]);
@@ -23,8 +25,8 @@ export default function Tracking() {
     const [coursesName, setCoursesName] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [filterCar, setFilterCar] = useState([]);
-    const [currentFilterClass, setCurrentFilterClass] = useState("");
-    const [isCourseModal, setIsCourseModal] = useState(false)
+    const [currentTags, setCurrentTags] = useState("");
+    const [isCourseModal, setIsCourseModal] = useState(false);
     const [currentNoteId, setCurrentNoteId] = useState("");
     const [tags, setTags] = useState([]);
 
@@ -100,6 +102,9 @@ export default function Tracking() {
     };
 
     const filterClass = (tags) => {
+        // check if note is current check
+        if (currentNoteId !== "") return;
+
         setFilterCar([]);
         let filteredResults = [];
         tags.forEach((tag) => {
@@ -115,17 +120,19 @@ export default function Tracking() {
             filteredResults.push(...filter);
         });
 
-        setCurrentFilterClass(tags);
+        setCurrentTags(tags);
         setFilterCar(filteredResults);
     };
+
     const filterByNote = (id) => {
-        setFilterCar([]);
-        setTags([]);
         if (currentNoteId === id) {
             setCurrentNoteId("");
+            setFilterCar([]);
             return;
         }
         setCurrentNoteId(id);
+        setFilterCar([]);
+        setTags([]);
         const filteredNote = notes.filter((note) => note.id === id);
         const filteredResults = cars.filter((car) => {
             return filteredNote[0].cars.includes(car.plate);
@@ -141,16 +148,15 @@ export default function Tracking() {
     };
 
     useEffect(() => {
-        console.log(filterCar)
-    }, [filterCar])
-  
+        console.log(filterCar);
+    }, [filterCar]);
 
     return (
         <>
             <div className="flex flex-col justify-between px-8 py-4 h-full bg-[#ECE3CA]">
                 <div className="flex nowrap h-[60%] min-h-[60%]">
                     <div className="flex flex-row gap-5 h-full w-full min-w-[300px] rounded py-2.5 mb-5">
-                        {notes.length > 0 ? <Notes notes={notes} filterByNote={filterByNote} currentNoteId={currentNoteId} /> : null}
+                        <Notes notes={notes} filterByNote={filterByNote} currentNoteId={currentNoteId} currentClass={currentClass} />
                         <ToolBar
                             handleSearch={handleSearch}
                             coursesName={coursesName}
@@ -183,29 +189,30 @@ export default function Tracking() {
                         </div>
                     </div>
                 </div>
-                <div className="flex mt-5 relative border-box w-full h-[50%] rounded mr-5 justify-between overflow-y-scroll">
+                <div className="flex mt-5 relative border-box w-full h-[50%] rounded mr-5 justify-between">
                     <div className="flex h-full w-[100%]">
                         <div
-                            className="h-full bg-[#111111]/[.2]  w-[28px] rounded flex items-center cursor-pointer mr-4 transition-colors duration-100 hover:bg-[#2E282A] hover:text-white"
-                            title="Thêm khóa học"
+                            className="h-full bg-[#111111]/[.2] w-[28px] min-w-[28px] rounded flex items-center cursor-pointer mr-4 transition-colors duration-100 hover:bg-[#2E282A] hover:text-white"
                             onClick={() => setIsCourseModal(true)}
                         >
                             <span className="w-full">
                                 <Plus className="w-full h-full" />
                             </span>
                         </div>
-                        <ol className="flex flex-wrap h-full w-full gap-2">
-                            {courses.length > 1 &&
-                                courses.map((course) => {
-                                    return (
-                                        <li className="block shirk-0 px-[6px] h-full whitespace-nowrap">
-                                            <CourseList course={course} />
-                                        </li>
-                                    );
-                                })}
-                        </ol>
+                        <ScrollableList>
+                            <ol className="flex basis-[95%] pb-2 h-full w-full gap-2">
+                                {courses.length > 1 &&
+                                    courses.map((course) => {
+                                        return (
+                                            <li className="block shirk-0 px-[6px] h-full whitespace-nowrap">
+                                                <CourseList course={course} />
+                                            </li>
+                                        );
+                                    })}
+                            </ol>
+                        </ScrollableList>
                     </div>
-                    <AddCourseModal trigger={isCourseModal} setTrigger={setIsCourseModal}/>
+                    {/*<AddCourseModal trigger={isCourseModal} setTrigger={setIsCourseModal} />
                     {/* <div className="w-[40%] h-full bg-[#FAF7F5] rounded">
                         info
                     </div> */}

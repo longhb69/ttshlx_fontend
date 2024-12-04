@@ -46,7 +46,7 @@ export default function ToolBar({ handleSearch, coursesName, filterClass, tags, 
     useOnClickOutside(ref, handleClickOutside);
 
     return (
-        <div className="h-full flex flex-col">
+        <div className="h-full flex flex-col max-w-[20%]">
             <div className="h-[10%] flex items-center justify-center bg-[#E4D8B4] font-semibold rounded shadow">
                 <div className="w-[33%] hover:bg-[#111111]/[.1] flex items-center justify-center h-full cursor-pointer text-[#111111]/[.8]">B11</div>
                 <div className="w-[33%] hover:bg-[#111111]/[.1] flex items-center justify-center h-full cursor-pointer text-[#111111]/[.8]">

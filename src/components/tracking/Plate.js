@@ -60,7 +60,7 @@ const PlatePrimitive = ({ car }) => {
                 </span>{" "}
                 <span className={isExpired ? "text-red-500" : ""}>{formatFirebaseTimestamp(expiry_date.seconds)}</span>
             </p>
-            <p className="text-sm flex gap-1 overflow-hidden wrap w-[10%]">
+            <p className="text-sm ml-2 flex gap-1 items-center overflow-hidden wrap w-[10%]">
                 <span>
                     <User className="w-[15px] h-[15px]" />
                 </span>
@@ -88,7 +88,7 @@ const PlatePrimitive = ({ car }) => {
                         })}
                 </div>
             </div>
-            <div className="flex items-center h-full justify-center relative" onClick={() => setIsOption(!isOption)} ref={optionRef}>
+            <div className="flex items-center h-full justify-center cursor-pointer relative" onClick={() => setIsOption(!isOption)} ref={optionRef}>
                 <Ellipsis />
                 {isOption ? (
                     <div className="absolute bg-white border text-sm rounded z-[100] shadow-lg top-full p-2 w-[140px] option-container">
@@ -153,7 +153,7 @@ export default function Plate({ car }) {
     }, []);
 
     return (
-        <li className={`flex w-full cursor-pointer  ${state.type === "dragging" ? "opacity-40" : ""}`}>
+        <li className={`flex w-full cursor-auto  ${state.type === "dragging" ? "opacity-40" : ""}`}>
             <div className="border mt-2 flex gap-4 items-center transition-colors duration-75 hover:bg-[#111111]/[.1]  border-[#2E282A] text-[#282425] rounded-lg shadow p-2 bg-[#E4D8B4] w-full">
                 <DragHandleButton ref={mergeRefs([dragHandleRef, ref])} />
                 <PlatePrimitive car={car} />
