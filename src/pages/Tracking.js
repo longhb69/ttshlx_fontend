@@ -12,7 +12,7 @@ import Header from "../components/board/Header.js";
 import Button from "@atlaskit/button/new";
 import { Filter } from "lucide-react";
 import ToolBar from "../components/tracking/ToolBar.js";
-import Notes from "../components/tracking/Notes.js";
+//import Notes from "../components/tracking/Notes.js";
 
 export default function Tracking() {
     const [teacherList, setTeacherList] = useState([]);
@@ -129,7 +129,7 @@ export default function Tracking() {
             <div className="flex flex-col justify-between px-8 py-4 h-full bg-[#ECE3CA]">
                 <div className="flex nowrap h-[60%] min-h-[60%]">
                     <div className="flex flex-row gap-5 h-full w-full min-w-[300px] rounded pl-2.5 py-2.5 mb-5">
-                        {notes.length > 0 ? <Notes notes={notes} filterByNote={filterByNote} /> : null}
+                        {/* {notes.length > 0 ? <Notes notes={notes} filterByNote={filterByNote} /> : null} */}
                         <ToolBar handleSearch={handleSearch} coursesName={coursesName} filterClass={filterClass} />
                         <div className="max-w-[85%] min-w-[70%] min-h-full overflow-hidden max-h-full bg-[#E4D8B4] ">
                             <ol className={`px-4 h-full min-h-full w-full overflow-y-scroll plate-scroll rounded-md shadow-md`}>
