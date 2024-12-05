@@ -22,6 +22,7 @@ export default function CourseList({ course }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const columnRef = useRef(null);
     const [colState, setColState] = useState(idle);
+    const [carSlot, setCarSlot] = useState(null)
 
     useEffect(() => {
         if (!columnRef.current) return;
@@ -37,8 +38,10 @@ export default function CourseList({ course }) {
                     setColState(idle);
                     console.log(source.data);
                     AddCarToCourse(source.data.car.plate).then(() => {
-                        console.log("update car");
-                        updateCarSlot(source.data.car.plate, 1, source.data.car.current_slot, source.data.car.available_slot);
+                        updateCarSlot(source.data.car.plate, 1, source.data.car.current_slot, source.data.car.available_slot).then(() => {
+                            console.log(source.data.car)
+                            setCarSlot(source.data.car)
+                        });
                     });
                 },
             })
@@ -151,8 +154,16 @@ export default function CourseList({ course }) {
                             <ProgressBar value={calculateProcess()} />
                         </div>
                     </div>
-                    <div className="w-full flex items-center justify-center mt-2">
-                        <div></div>
+                    <div className="w-full flex items-center justify-center mt-2 p-[8px]">
+                        {colState.type === "is-car-over" ?
+                            <div className="bg-slate-300 w-[70%] rounded h-[30px]"></div>
+                        : null}
+                        {carSlot != null ? 
+                            <div className="flex gap-2">
+                                <span>{carSlot.plate}</span>
+                                <span>{carSlot.number_of_students}</span>
+                            </div> 
+                        : null}
                     </div>
                 </div>
             </div>

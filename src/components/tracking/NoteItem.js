@@ -9,6 +9,7 @@ export default function NoteItems({ note, editMode, setEditMode, filterByNote, c
     const optionRef = useRef();
 
     const handleDelete = async () => {
+        setIsOption(false)
         try {
             await deleteDoc(doc(db, "notes", note.id));
             console.log("Document successfully deleted!");

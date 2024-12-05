@@ -49,7 +49,7 @@ export default function Notes({ notes, filterByNote, currentNoteId, currentClass
     return (
         <div className="w-[10%] bg-[#E4D8B4] p-2 flex flex-col  h-full text-ellipsis relative text-[14px] font-semibold rounded scrollbar-hidden">
             <div className="flex p-[6px] justify-between mb-2">
-                <span>Ghi Chú</span>
+                <span className="text-sm">Ghi Chú</span>
                 <div className="flex items-center gap-3">
                     <div
                         className="cursor-pointer w-[22px] h-[22px] bg-[#111111]/[.1] rounded-full transition duration-75 hover:bg-[#2E282A] hover:text-white"

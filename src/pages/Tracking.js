@@ -14,7 +14,7 @@ import { Filter } from "lucide-react";
 import ToolBar from "../components/tracking/ToolBar.js";
 import Notes from "../components/tracking/Notes.js";
 import ScrollableList from "../components/ScrollableList.tsx";
-//import AddCourseModal from "../components/modal/AddCourseModal.tsx"
+import AddCourseModal from "../components/modal/AddCourseModal.tsx"
 
 export default function Tracking() {
     const [currentClass, setCurrentClass] = useState("C");
@@ -200,7 +200,7 @@ export default function Tracking() {
                             </span>
                         </div>
                         <ScrollableList>
-                            <ol className="flex basis-[95%] pb-2 h-full w-full gap-2">
+                            <ol className="flex basis-[95%] h-full pb-2 w-full gap-2">
                                 {courses.length > 1 &&
                                     courses.map((course) => {
                                         return (
@@ -212,7 +212,7 @@ export default function Tracking() {
                             </ol>
                         </ScrollableList>
                     </div>
-                    {/*<AddCourseModal trigger={isCourseModal} setTrigger={setIsCourseModal} />
+                    <AddCourseModal trigger={isCourseModal} setTrigger={setIsCourseModal} />
                     {/* <div className="w-[40%] h-full bg-[#FAF7F5] rounded">
                         info
                     </div> */}
