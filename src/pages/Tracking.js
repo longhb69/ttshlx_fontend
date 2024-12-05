@@ -17,6 +17,7 @@ import ScrollableList from "../components/ScrollableList.tsx";
 import AddCourseModal from "../components/modal/AddCourseModal.tsx"
 
 export default function Tracking() {
+
     const [currentClass, setCurrentClass] = useState("C");
     const [teacherList, setTeacherList] = useState([]);
     const [cars, setCars] = useState([]);
@@ -205,7 +206,7 @@ export default function Tracking() {
                                     courses.map((course) => {
                                         return (
                                             <li className="block shirk-0 px-[6px] h-full whitespace-nowrap">
-                                                <CourseList course={course} />
+                                                <CourseList course={course} currentCars={cars}/>
                                             </li>
                                         );
                                     })}

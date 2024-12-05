@@ -1,10 +1,11 @@
 import Blanket from "@atlaskit/blanket";
-import { X } from "lucide-react";
+import { Pencil, Trash2, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import formatFirebaseTimestamp from "../../utils/formatFirebaseTimestamp";
 import { MoveRight, MoveLeft } from "lucide-react";
 import Button from "@atlaskit/button/new";
 import { getFirestore, doc, increment, getDoc, updateDoc, deleteField } from "firebase/firestore";
+import CarItem from "../tracking/CarItem";
 
 const encodeKey = (key) => key.replace(/\./g, "_DOT_");
 const decodeKey = (key) => key.replace(/_DOT_/g, ".");
@@ -13,8 +14,9 @@ const NUMBER_TO_INCREASE = 1;
 
 export default function CourseModal(props) {
     const [isClosing, setIsClosing] = useState(false);
+    const [optionSate, setOptionState] = useState(false)
     const db = getFirestore();
-    const docRef = doc(db, "courses", props.course.id);
+    const docRef = doc(db, "courses", props.courseId);
 
     const handleClose = () => {
         setIsClosing(true);
@@ -129,6 +131,10 @@ export default function CourseModal(props) {
         }
     };
 
+    const handleSelectState = async () => {
+        console.log("Change state")
+    }
+
     useEffect(() => {}, [props.course]);
 
     return props.trigger ? (
@@ -140,21 +146,43 @@ export default function CourseModal(props) {
                             <div className="flex justify-between w-full">
                                 <div>
                                     <div className="flex border-box justify-start">
-                                        <h1 className="text-[#172B4D] text-[25px] font-semibold">{props.course.id}</h1>
+                                        <h1 className="text-[#172B4D] text-[25px] font-semibold">{props.courseId}</h1>
                                     </div>
                                     <div className="flex gap-5">
                                         <div>
                                             <span className="text-sm">Từ Ngày: </span>
-                                            {formatFirebaseTimestamp(props.course.start_date.seconds)}
+                                            {formatFirebaseTimestamp(props.joinCar.car.start_date.seconds)}
                                         </div>
                                         <div>
                                             <span className="text-sm">Đến Ngày: </span>
-                                            {formatFirebaseTimestamp(props.course.end_date.seconds)}
+                                            {formatFirebaseTimestamp(props.joinCar.car.end_date.seconds)}
                                         </div>
                                     </div>
                                 </div>
-                                <div className="inline-block text-base pt-[3px] pr-[8px]">
-                                    <div className="bg-green-300 text-green-800 px-2 py-1 cursor-pointer rounded-full">{props.course.state}</div>
+                                <div className="inline-block text-base pt-[3px] pr-[8px] relative" onClick={() => setOptionState(!optionSate)}>
+                                    <div className="bg-green-300 text-green-800 px-2 py-1 cursor-pointer rounded-full select-none">{props.joinCar.value.state}</div>
+                                    {optionSate ? (
+                                        <div className="absolute select-none bg-white border text-sm rounded z-[100] shadow-lg p-2 w-[140px] option-container">
+                                            <div className="hover:bg-[#111111]/[.1] p-2 rounded flex items-center" >
+                                                <span className="font-semibold">Chưa bắt đầu</span>
+                                            </div>
+                                            <div className="hover:bg-[#111111]/[.1] p-2 rounded flex items-center ">                                              
+                                                <div className="flex justify-start">
+                                                    <span className="text-start font-semibold">Đang thực hiện</span>
+                                                </div>
+                                            </div>
+                                            <div className="hover:bg-[#111111]/[.1] p-2 rounded flex items-center ">                                              
+                                                <div className="flex justify-start">
+                                                    <span className="text-start font-semibold">Tiếp tục</span>
+                                                </div>
+                                            </div>
+                                            <div className="hover:bg-[#111111]/[.1] p-2 rounded flex items-center ">                                              
+                                                <div className="flex justify-start">
+                                                    <span className="text-start font-semibold">Đã hoàn thành</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ) : null}
                                 </div>
                                 <div className="flex border-box justify-end">
                                     <button
@@ -179,37 +207,11 @@ export default function CourseModal(props) {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {Object.entries(props.course.cars)
+                                        {Object.entries(props.combinedData.course.cars)
                                             .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
                                             .map(([key, value]) => (
-                                                <tr className="hover:bg-[#f0f0f0] transition-colors duration-200" key={key}>
-                                                    <td className="border px-2 py-1 text-gray-800 text-base" style={{ width: "20%" }}>
-                                                        {decodeKey(key)}
-                                                    </td>
-                                                    <td className="border px-2 py-1 text-gray-800 text-center" style={{ width: "20%" }}>
-                                                        <div className="flex items-center justify-evenly">
-                                                            <div>
-                                                                <div className="w-[30px] h-[30px] flex items-center justify-center hover:bg-[#111111]/[.2]  rounded transition-colors duration-200">
-                                                                    <button onClick={() => decreaseStudent(key)} className="w-full h-full">
-                                                                        <span className="text-lg">-</span>
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                            <div>
-                                                                <span className="text-lg font-semibold">{value.number_of_students}</span>
-                                                            </div>
-                                                            <div className="w-[30px] h-[30px] flex items-center justify-center hover:bg-[#111111]/[.2]  rounded transition-colors duration-200">
-                                                                <button className="w-full h-full" onClick={() => increaseStudent(key)}>
-                                                                    +
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td className="border px-2 py-1 text-gray-800" style={{ width: "50%" }}>
-                                                        {value.note}
-                                                    </td>
-                                                </tr>
-                                            ))}
+                                            <CarItem plate={key} value={value} decreaseStudent={decreaseStudent} increaseStudent={increaseStudent} courseId={props.course.id}/> 
+                                        ))}
                                     </tbody>
                                 </table>
                             </div>

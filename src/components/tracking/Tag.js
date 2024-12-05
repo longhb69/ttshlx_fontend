@@ -4,7 +4,7 @@ const Tag = React.memo(
     ({ text, number_of_students, background }) => {
         return (
             <div
-                className={`items-center text-[14px] p-1 font-semibold relative rounded cursor-default text-[#282425]`}
+                className={`items-center text-[14px] p-1 font-semibold relative rounded cursor-pointer text-[#282425]`}
                 style={{ backgroundColor: background }}
             >
                 <span className="overflow-hidden overflow-ellipsis nowrap">

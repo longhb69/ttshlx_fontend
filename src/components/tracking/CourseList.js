@@ -17,12 +17,13 @@ const isCarOver = { type: "is-car-over" };
 const encodeKey = (key) => key.replace(/\./g, "_DOT_");
 const decodeKey = (key) => key.replace(/_DOT_/g, ".");
 
-export default function CourseList({ course }) {
+export default function CourseList({ course, currentCars }) {
     const { id, state, start_date, end_date, cars } = course;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const columnRef = useRef(null);
     const [colState, setColState] = useState(idle);
     const [carSlot, setCarSlot] = useState(null)
+    const [joinCar, setJoinCar] = useState()
 
     useEffect(() => {
         if (!columnRef.current) return;
@@ -37,11 +38,9 @@ export default function CourseList({ course }) {
                     //self.data.id get this columnRef id
                     setColState(idle);
                     console.log(source.data);
-                    AddCarToCourse(source.data.car.plate).then(() => {
-                        updateCarSlot(source.data.car.plate, 1, source.data.car.current_slot, source.data.car.available_slot).then(() => {
-                            console.log(source.data.car)
-                            setCarSlot(source.data.car)
-                        });
+                    AddCarToCourse(source.data.car.plate).then( async () => {
+                        const newSlot = await updateCarSlot(source.data.car.plate, 1, source.data.car.current_slot, source.data.car.available_slot)
+                        setCarSlot(source.data.car)
                     });
                 },
             })
@@ -102,6 +101,7 @@ export default function CourseList({ course }) {
             await updateDoc(carDocRef, {
                 current_slot: newSlotNumber,
             });
+            return newSlotNumber
         } catch (error) {
             console.error("Error updating document:", error);
         }
@@ -120,8 +120,17 @@ export default function CourseList({ course }) {
     };
 
     useEffect(() => {
-        //console.log("drag over", id);
-    }, [colState]);
+        if(!course) return
+
+        const combinedData = Object.entries(course.cars).map(([key, value]) => {
+            const car = currentCars.find((c) => c.plate === decodeKey(key)) 
+            return {course, car}
+        })
+
+        console.log(combinedData)
+
+        setJoinCar(combinedData)
+    }, [currentCars]);
 
     return (
         <div
@@ -136,7 +145,7 @@ export default function CourseList({ course }) {
                     <div className="relative  flex items-start grow pt-[8px] px-[8px] shrink min-h-[35px] text-[#172b4d]">
                         <h2 className="block px-[6px] pr-[8px] bg-transparent text-[22px] font-semibold whitespace-normal leading-5">{id}</h2>
                     </div>
-                    <div className="inline-block text-base pt-[3px] pr-[8px]">
+                    <div className="inline-block text-base pt-[3px] pr-[8px] relative">
                         <div className="bg-green-300 text-green-800 px-2 py-1 rounded-full">{state}</div>
                     </div>
                     {/* <div className="w-[15px] h-[15px] mt-[10px] cursor-pointer">
@@ -161,13 +170,13 @@ export default function CourseList({ course }) {
                         {carSlot != null ? 
                             <div className="flex gap-2">
                                 <span>{carSlot.plate}</span>
-                                <span>{carSlot.number_of_students}</span>
+                                <span>{carSlot.current_slot}</span>
                             </div> 
                         : null}
                     </div>
                 </div>
             </div>
-            <CourseModal course={course} trigger={isModalOpen} setTrigger={setIsModalOpen} />
+            <CourseModal joinCar={joinCar} courseId={course.id} trigger={isModalOpen} setTrigger={setIsModalOpen} />
         </div>
     );
 }
