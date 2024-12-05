@@ -14,10 +14,11 @@ import { Filter } from "lucide-react";
 import ToolBar from "../components/tracking/ToolBar.js";
 import Notes from "../components/tracking/Notes.js";
 import ScrollableList from "../components/ScrollableList.tsx";
-import AddCourseModal from "../components/modal/AddCourseModal.tsx"
+import AddCourseModal from "../components/modal/AddCourseModal.tsx";
+import { useParams } from "react-router-dom";
 
 export default function Tracking() {
-
+    const { param1 } = useParams();
     const [currentClass, setCurrentClass] = useState("C");
     const [teacherList, setTeacherList] = useState([]);
     const [cars, setCars] = useState([]);
@@ -149,8 +150,8 @@ export default function Tracking() {
     };
 
     useEffect(() => {
-        console.log(filterCar);
-    }, [filterCar]);
+        console.log(param1);
+    }, [param1]);
 
     return (
         <>
@@ -206,7 +207,7 @@ export default function Tracking() {
                                     courses.map((course) => {
                                         return (
                                             <li className="block shirk-0 px-[6px] h-full whitespace-nowrap">
-                                                <CourseList course={course} currentCars={cars}/>
+                                                <CourseList course={course} currentCars={cars} />
                                             </li>
                                         );
                                     })}

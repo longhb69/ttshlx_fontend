@@ -17,7 +17,7 @@ export default function ScrollableList({ children }: { children: ReactElement })
     });
 
     return (
-        <div ref={ref} className="custom-scrollbar overflow-y-hidden h-fit">
+        <div ref={ref} className="h-full custom-scrollbar overflow-y-hidden h-fit">
             {children}
         </div>
     );

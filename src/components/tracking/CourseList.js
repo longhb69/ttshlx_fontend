@@ -1,7 +1,7 @@
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine";
 import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { Pencil } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import formatFirebaseTimestamp from "../../utils/formatFirebaseTimestamp";
 import { MoveRight } from "lucide-react";
 import { doc, updateDoc, getDoc } from "firebase/firestore";
@@ -18,12 +18,11 @@ const encodeKey = (key) => key.replace(/\./g, "_DOT_");
 const decodeKey = (key) => key.replace(/_DOT_/g, ".");
 
 export default function CourseList({ course, currentCars }) {
-    const { id, state, start_date, end_date, cars } = course;
+    const { id, state, start_date, end_date } = course;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const columnRef = useRef(null);
     const [colState, setColState] = useState(idle);
-    const [carSlot, setCarSlot] = useState(null)
-    const [joinCar, setJoinCar] = useState()
+    const [carSlot, setCarSlot] = useState(null);
 
     useEffect(() => {
         if (!columnRef.current) return;
@@ -38,74 +37,79 @@ export default function CourseList({ course, currentCars }) {
                     //self.data.id get this columnRef id
                     setColState(idle);
                     console.log(source.data);
-                    AddCarToCourse(source.data.car.plate).then( async () => {
-                        const newSlot = await updateCarSlot(source.data.car.plate, 1, source.data.car.current_slot, source.data.car.available_slot)
-                        setCarSlot(source.data.car)
+                    AddCarToCourse(source.data.car.plate).then(async () => {
+                        console.log("data source slot: ", source.data.car.current_slot);
+                        updateCarSlot(source.data.car.plate, 1, source.data.car.current_slot, source.data.car.available_slot);
+                        setCarSlot(source.data.car);
                     });
                 },
             })
         );
     }, []);
 
-    const AddCarToCourse = async (plate, number_of_students = 1, note = "") => {
-        try {
-            const courseDocRef = doc(db, "courses", id);
-            const carDocRef = doc(db, "cars", plate);
-            const carDocSnap = await getDoc(carDocRef);
+    const AddCarToCourse = useCallback(
+        async (plate, number_of_students = 1, note = "") => {
+            try {
+                const courseDocRef = doc(db, "courses", id);
+                const carDocRef = doc(db, "cars", plate);
+                const carDocSnap = await getDoc(carDocRef);
 
-            await updateDoc(courseDocRef, {
-                [`cars.${encodeKey(plate)}`]: {
-                    note: note,
-                    number_of_students: number_of_students,
-                },
-            });
-
-            if (carDocSnap.exists()) {
-                const carData = carDocSnap.data();
-                const currentCourses = carData.courses || [];
-
-                const newCourseData = { name: id, number_of_students: number_of_students };
-                let updatedCourses;
-                let existingIndex;
-
-                if (currentCourses.length === 0) {
-                    updatedCourses = [...currentCourses, newCourseData];
-                } else {
-                    console.log("current course is not emty");
-                    existingIndex = currentCourses.findIndex((course) => course.name === id);
-                    console.log("check", existingIndex);
-                    if (existingIndex !== -1) return;
-
-                    updatedCourses = [...currentCourses, newCourseData];
-                    console.log("Added new course");
-                }
-
-                await updateDoc(carDocRef, {
-                    courses: updatedCourses,
+                await updateDoc(courseDocRef, {
+                    [`cars.${encodeKey(plate)}`]: {
+                        note: note,
+                        number_of_students: number_of_students,
+                    },
                 });
 
-                console.log("Courses updated successfully!");
-            } else {
-                console.error("Document does not exist!");
-            }
-        } catch (error) {
-            console.error("Error updating document:", error);
-        }
-    };
+                if (carDocSnap.exists()) {
+                    const carData = carDocSnap.data();
+                    const currentCourses = carData.courses || [];
 
-    const updateCarSlot = async (plate, slot_number, current_slot, available_slot) => {
+                    const newCourseData = { name: id, number_of_students: number_of_students };
+                    let updatedCourses;
+                    let existingIndex;
+
+                    if (currentCourses.length === 0) {
+                        updatedCourses = [...currentCourses, newCourseData];
+                    } else {
+                        console.log("current course is not emty");
+                        existingIndex = currentCourses.findIndex((course) => course.name === id);
+                        console.log("check", existingIndex);
+                        if (existingIndex !== -1) return;
+
+                        updatedCourses = [...currentCourses, newCourseData];
+                        console.log("Added new course");
+                    }
+
+                    await updateDoc(carDocRef, {
+                        courses: updatedCourses,
+                    });
+
+                    console.log("Courses updated successfully!");
+                } else {
+                    console.error("Document does not exist!");
+                }
+            } catch (error) {
+                console.error("Error updating document:", error);
+            }
+        },
+        [id]
+    );
+
+    const updateCarSlot = useCallback(async (plate, slot_number, current_slot, available_slot) => {
         try {
+            console.log(current_slot, slot_number);
             const newSlotNumber = (current_slot += slot_number);
             console.log("new slot", newSlotNumber);
             const carDocRef = doc(db, "cars", plate);
             await updateDoc(carDocRef, {
                 current_slot: newSlotNumber,
             });
-            return newSlotNumber
+            return newSlotNumber;
         } catch (error) {
             console.error("Error updating document:", error);
         }
-    };
+    }, []);
 
     const calculateProcess = () => {
         const currentTimestamp = Date.now();
@@ -118,19 +122,6 @@ export default function CourseList({ course, currentCars }) {
         const progress = Math.max(0, Math.min(1, elapsedTime / totalDuration));
         return progress;
     };
-
-    useEffect(() => {
-        if(!course) return
-
-        const combinedData = Object.entries(course.cars).map(([key, value]) => {
-            const car = currentCars.find((c) => c.plate === decodeKey(key)) 
-            return {course, car}
-        })
-
-        console.log(combinedData)
-
-        setJoinCar(combinedData)
-    }, [currentCars]);
 
     return (
         <div
@@ -164,19 +155,17 @@ export default function CourseList({ course, currentCars }) {
                         </div>
                     </div>
                     <div className="w-full flex items-center justify-center mt-2 p-[8px]">
-                        {colState.type === "is-car-over" ?
-                            <div className="bg-slate-300 w-[70%] rounded h-[30px]"></div>
-                        : null}
-                        {carSlot != null ? 
+                        {colState.type === "is-car-over" ? <div className="bg-slate-300 w-[70%] rounded h-[30px]"></div> : null}
+                        {carSlot != null ? (
                             <div className="flex gap-2">
                                 <span>{carSlot.plate}</span>
                                 <span>{carSlot.current_slot}</span>
-                            </div> 
-                        : null}
+                            </div>
+                        ) : null}
                     </div>
                 </div>
             </div>
-            <CourseModal joinCar={joinCar} courseId={course.id} trigger={isModalOpen} setTrigger={setIsModalOpen} />
+            <CourseModal course={course} trigger={isModalOpen} setTrigger={setIsModalOpen} />
         </div>
     );
 }

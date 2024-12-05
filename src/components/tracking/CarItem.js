@@ -1,17 +1,18 @@
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
-import { useState } from "react"
+import { useEffect, useState } from "react";
 const decodeKey = (key) => key.replace(/_DOT_/g, ".");
 
-export default function CarItem({plate, value, decreaseStudent, increaseStudent, courseId}) {
-    const [text, setText] = useState(value.note)
+export default function CarItem({ plate, value, cars, decreaseStudent, increaseStudent, courseId }) {
+    const [text, setText] = useState(value.note);
+    const [carData, setCarData] = useState();
 
     const handleBlur = () => {
-        if(text !== value.note) {
-            const docRef = doc(db, "courses", courseId)
+        if (text !== value.note) {
+            const docRef = doc(db, "courses", courseId);
             updateDoc(docRef, {
                 [`cars.${plate}.note`]: text,
-            })
+            });
         }
     };
 
@@ -20,6 +21,11 @@ export default function CarItem({plate, value, decreaseStudent, increaseStudent,
             <td className="border px-2 py-1 text-gray-800 text-base" style={{ width: "20%" }}>
                 {decodeKey(plate)}
             </td>
+            {carData && (
+                <td className="border px-2 py-1 text-gray-800 text-center" style={{ width: "20%" }}>
+                    {carData.car.owner_name}
+                </td>
+            )}
             <td className="border px-2 py-1 text-gray-800 text-center" style={{ width: "20%" }}>
                 <div className="flex items-center justify-evenly">
                     <div>
@@ -40,13 +46,13 @@ export default function CarItem({plate, value, decreaseStudent, increaseStudent,
                 </div>
             </td>
             <td className="border px-2 py-1 text-gray-800" style={{ width: "50%" }}>
-                <textarea 
-                    className="m-0 w-full overflow-hidden border-none rounded bg-white resize-none break outline-none" 
-                    value={text} 
-                    onBlur={handleBlur} 
+                <textarea
+                    className="m-0 w-full overflow-hidden border-none rounded bg-white resize-none break outline-none"
+                    value={text}
+                    onBlur={handleBlur}
                     onChange={(e) => setText(e.target.value)}
                 />
             </td>
         </tr>
-    )
+    );
 }
