@@ -1,6 +1,6 @@
 import Blanket from "@atlaskit/blanket";
-import { X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { X, Plus, Minus } from "lucide-react";
+import {useState } from "react";
 import formatFirebaseTimestamp from "../../utils/formatFirebaseTimestamp";
 import { getFirestore, doc, increment, getDoc, updateDoc, deleteField } from "firebase/firestore";
 import CarItem from "../tracking/CarItem";

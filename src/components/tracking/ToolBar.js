@@ -6,8 +6,10 @@ import { Plus } from "lucide-react";
 import CarModal from "../modal/CarModal.tsx";
 import Tag from "@atlaskit/tag";
 import TagGroup from "@atlaskit/tag-group";
+import { Link, useParams } from "react-router-dom";
 
 export default function ToolBar({ handleSearch, coursesName, filterClass, tags, setTags, resetNote }) {
+    const { param1 } = useParams();
     const ref = useRef(null);
     const [isOpen, setIsOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -48,11 +50,9 @@ export default function ToolBar({ handleSearch, coursesName, filterClass, tags, 
     return (
         <div className="h-full flex flex-col max-w-[20%]">
             <div className="h-[10%] flex items-center justify-center bg-[#E4D8B4] font-semibold rounded shadow">
-                <div className="w-[33%] hover:bg-[#111111]/[.1] flex items-center justify-center h-full cursor-pointer text-[#111111]/[.8]">B11</div>
-                <div className="w-[33%] hover:bg-[#111111]/[.1] flex items-center justify-center h-full cursor-pointer text-[#111111]/[.8]">
-                    B1+B2
-                </div>
-                <div className="w-[33%] bg-[#2E282A] text-white flex items-center justify-center h-full cursor-pointer">C</div>
+                <Link to="/tracking/B11" className={`${param1 === "B11" ? "bg-[#2E282A] text-white" : "hover:bg-[#111111]/[.1] text-[#111111]/[.8]"} w-[33%] transition flex items-center justify-center h-full cursor-pointer`}>B11</Link>
+                <Link to="/tracking/B1+B2" className={`${param1 === "B1+B2" ? "bg-[#2E282A] text-white" : "hover:bg-[#111111]/[.1] text-[#111111]/[.8]"} w-[33%] transition flex items-center justify-center h-full cursor-pointer`}>B1+B2</Link>
+                <Link to="/tracking/C" className={`${param1 === "C" ? "bg-[#2E282A] text-white" : "hover:bg-[#111111]/[.1] text-[#111111]/[.8]"} w-[33%] flex transition items-center justify-center h-full cursor-pointer`}>C</Link>
             </div>
             <div className=" flex flex-col h-[90%] p-2 mt-5 rounded-md gap-2 bg-[#E4D8B4] shadow" ref={ref}>
                 <input

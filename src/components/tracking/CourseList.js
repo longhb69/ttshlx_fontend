@@ -23,6 +23,7 @@ export default function CourseList({ course, currentCars }) {
     const columnRef = useRef(null);
     const [colState, setColState] = useState(idle);
     const [carSlot, setCarSlot] = useState(null);
+    const [carCount, setCarCount] = useState(0)
 
     useEffect(() => {
         if (!columnRef.current) return;
@@ -37,15 +38,22 @@ export default function CourseList({ course, currentCars }) {
                     //self.data.id get this columnRef id
                     setColState(idle);
                     console.log(source.data);
-                    AddCarToCourse(source.data.car.plate).then(async () => {
-                        console.log("data source slot: ", source.data.car.current_slot);
-                        updateCarSlot(source.data.car.plate, 1, source.data.car.current_slot, source.data.car.available_slot);
-                        setCarSlot(source.data.car);
+                    const result = AddCarToCourse(source.data.car.plate).then((response) => {
+                        if(response.status === 200)
+                        updateCarSlot(source.data.car.plate, 1, source.data.car.current_slot);
                     });
                 },
             })
         );
     }, []);
+
+    useEffect(() => {
+        let count = 0
+        Object.entries(course.cars).forEach(([key, value]) => {
+            count += Number(value.number_of_students)
+        })
+        setCarCount(count)
+    }, [course])
 
     const AddCarToCourse = useCallback(
         async (plate, number_of_students = 1, note = "") => {
@@ -53,6 +61,7 @@ export default function CourseList({ course, currentCars }) {
                 const courseDocRef = doc(db, "courses", id);
                 const carDocRef = doc(db, "cars", plate);
                 const carDocSnap = await getDoc(carDocRef);
+                const courseDocSnap = await getDoc(courseDocRef);
 
                 await updateDoc(courseDocRef, {
                     [`cars.${encodeKey(plate)}`]: {
@@ -61,34 +70,36 @@ export default function CourseList({ course, currentCars }) {
                     },
                 });
 
-                if (carDocSnap.exists()) {
-                    const carData = carDocSnap.data();
-                    const currentCourses = carData.courses || [];
-
-                    const newCourseData = { name: id, number_of_students: number_of_students };
-                    let updatedCourses;
-                    let existingIndex;
-
-                    if (currentCourses.length === 0) {
-                        updatedCourses = [...currentCourses, newCourseData];
-                    } else {
-                        console.log("current course is not emty");
-                        existingIndex = currentCourses.findIndex((course) => course.name === id);
-                        console.log("check", existingIndex);
-                        if (existingIndex !== -1) return;
-
-                        updatedCourses = [...currentCourses, newCourseData];
-                        console.log("Added new course");
-                    }
-
-                    await updateDoc(carDocRef, {
-                        courses: updatedCourses,
-                    });
-
-                    console.log("Courses updated successfully!");
-                } else {
+                if (!carDocSnap.exists()) {
                     console.error("Document does not exist!");
+                    return
+                } 
+
+                const carData = carDocSnap.data()
+                const currentCarCourse = carData.courses || [];
+                const newCourseData = { name: id, number_of_students: number_of_students };
+                let updatedCourses;
+                let existingIndex;
+
+                if(currentCarCourse.length === 0) {
+                    console.log("car have no course")
+                    updatedCourses = [newCourseData]
                 }
+                else {
+                    console.log("Car already have some course")
+                    existingIndex = currentCarCourse.findIndex((course) => course.name === id);
+                    console.log("check", existingIndex);
+                    if (existingIndex !== -1) return {status: 400};
+
+                    updatedCourses = [...currentCarCourse, newCourseData]
+                }
+
+                await updateDoc(carDocRef, {
+                    courses: updatedCourses,
+                });
+
+                return {status: 200}
+             
             } catch (error) {
                 console.error("Error updating document:", error);
             }
@@ -96,7 +107,7 @@ export default function CourseList({ course, currentCars }) {
         [id]
     );
 
-    const updateCarSlot = useCallback(async (plate, slot_number, current_slot, available_slot) => {
+    const updateCarSlot = useCallback(async (plate, slot_number, current_slot) => {
         try {
             console.log(current_slot, slot_number);
             const newSlotNumber = (current_slot += slot_number);
@@ -152,6 +163,16 @@ export default function CourseList({ course, currentCars }) {
                         </div>
                         <div className={`w-[90%] h-[10px] ${calculateProcess() !== 1 ? "force-bar-color" : "force-bar-complete"}`}>
                             <ProgressBar value={calculateProcess()} />
+                        </div>
+                    </div>
+                    <div className="mt-5 w-full text-base flex justify-evenly items-center gap-2">
+                        <div>
+                            <span>Số xe: </span>
+                            <span>{Object.keys(course.cars).length}</span>
+                        </div>
+                        <div>
+                            <span>Số học viên: </span>
+                            <span>{carCount}</span>
                         </div>
                     </div>
                     <div className="w-full flex items-center justify-center mt-2 p-[8px]">

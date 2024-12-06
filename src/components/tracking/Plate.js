@@ -150,7 +150,7 @@ export default function Plate({ car }) {
                 },
             })
         );
-    }, []);
+    }, [car]);
 
     return (
         <li className={`flex w-full cursor-auto  ${state.type === "dragging" ? "opacity-40" : ""}`}>

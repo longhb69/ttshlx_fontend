@@ -1,21 +1,15 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Pencil, Plus } from "lucide-react";
-import TrackItem from "../components/tracking/TrackItem";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { Plus } from "lucide-react";
 import { db } from "../config/firebase";
 import { getDocs, collection, getDoc, doc, onSnapshot, query, where, orderBy } from "firebase/firestore";
 import Plate from "../components/tracking/Plate";
 import CourseList from "../components/tracking/CourseList";
-import Modal, { ModalTransition, useModal } from "@atlaskit/modal-dialog";
-import CarModal from "../components/modal/CarModal.tsx";
-import Blanket from "@atlaskit/blanket";
-import Header from "../components/board/Header.js";
-import Button from "@atlaskit/button/new";
-import { Filter } from "lucide-react";
 import ToolBar from "../components/tracking/ToolBar.js";
 import Notes from "../components/tracking/Notes.js";
 import ScrollableList from "../components/ScrollableList.tsx";
 import AddCourseModal from "../components/modal/AddCourseModal.tsx";
 import { useParams } from "react-router-dom";
+import { CarsContext } from "../Context/CarsContext.js";
 
 export default function Tracking() {
     const { param1 } = useParams();
@@ -31,6 +25,7 @@ export default function Tracking() {
     const [isCourseModal, setIsCourseModal] = useState(false);
     const [currentNoteId, setCurrentNoteId] = useState("");
     const [tags, setTags] = useState([]);
+    const {gobalCars, setGobalCars} = useContext(CarsContext)
 
     const teachersCollectionRef = collection(db, "teachers");
     const carsCollectionRef = collection(db, "cars");
@@ -39,11 +34,14 @@ export default function Tracking() {
     const addCarModalRef = useRef();
 
     useEffect(() => {
-        const orderedQuery = query(carsCollectionRef, orderBy("createdAt", "desc"));
+        const orderedQuery = query(carsCollectionRef, where("car_class", "==", param1));
         const unsubscribe = onSnapshot(
-            carsCollectionRef,
+            orderedQuery,
             (querySnapshot) => {
-                setCars(querySnapshot.docs.map((doc) => doc.data()));
+                const query = querySnapshot.docs.map((doc) => doc.data())
+                console.log(query)
+                setCars(query);
+                setGobalCars(query)
             },
             (error) => {
                 console.error("Error fetching real-time updates:", error);
@@ -51,7 +49,7 @@ export default function Tracking() {
         );
 
         return () => unsubscribe();
-    }, []);
+    }, [param1]);
 
     useEffect(() => {
         const unsubscribe = onSnapshot(
@@ -178,7 +176,7 @@ export default function Tracking() {
                                               />
                                           );
                                       })
-                                    : cars.length > 1 &&
+                                    : cars.length > 0 &&
                                       cars.map((car) => {
                                           return (
                                               <Plate

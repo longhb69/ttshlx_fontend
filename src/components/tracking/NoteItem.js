@@ -1,12 +1,52 @@
 import { Ellipsis, Trash2 } from "lucide-react";
-import { useRef, useState } from "react";
-import { deleteDoc, doc } from "firebase/firestore";
+import { useEffect, useRef, useState } from "react";
+import { deleteDoc, doc, updateDoc,arrayUnion } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import { useOnClickOutside } from "usehooks-ts";
+import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine";
+import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 
 export default function NoteItems({ note, editMode, setEditMode, filterByNote, currentNoteId }) {
+    const idle = { type: "idle" };
+    const isCarOver = { type: "is-car-over" };
     const [isOption, setIsOption] = useState(false);
+    const [colState, setColState] = useState(idle);
     const optionRef = useRef();
+    const ref = useRef()
+
+    useEffect(() => {
+        if(!ref.current) return;
+
+        return combine(
+            dropTargetForElements({
+                element: ref.current,
+                onDragEnter: () => {
+                    setColState(isCarOver) 
+                    console.log("Car enter")
+                },
+                onDragLeave: () => setColState(idle),
+                onDragStart: () => setColState(isCarOver),
+                onDrop: ({ source, self }) => {
+                    //self.data.id get this columnRef id
+                    setColState(idle);
+                    console.log(source.data);
+                    AddCarToNote(source.data.car.plate)
+                },
+            })
+        )
+
+    }, [])
+
+    const AddCarToNote = async(plate) => {
+        try {
+            const docRef = doc(db, "notes", note.id)
+            await updateDoc(docRef, {
+                cars: arrayUnion(plate)
+            })
+        } catch (error) {
+            console.error("Error adding car to note:", error);
+        }
+    }
 
     const handleDelete = async () => {
         setIsOption(false)
@@ -29,9 +69,11 @@ export default function NoteItems({ note, editMode, setEditMode, filterByNote, c
             onClick={() => {
                 if (!editMode) filterByNote(note.id);
             }}
-            className={`${
-                note.id === currentNoteId ? "bg-[#2E282A] text-white" : "bg-[#111111]/[.1] hover:bg-transparent static"
-            } flex justify-between items-center bg-[#111111]/[.1] mb-2  cursor-pointer p-1 rounded-md select-none relative`}
+            ref={ref}
+            className={`${note.id === currentNoteId ? "bg-[#2E282A] text-white" : "bg-[#111111]/[.1] hover:bg-transparent static"} 
+                ${colState.type === "is-car-over" ? "border-red-400" : "border-transparent"}
+                flex justify-between items-center bg-[#111111]/[.1] mb-2 border-2  cursor-pointer p-1 rounded-md select-none relative`
+            }
         >
             <div>{note.content}</div>
             {editMode ? (

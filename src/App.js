@@ -5,6 +5,8 @@ import Home from "./pages/Home";
 import Accountant from "./pages/Board";
 import DAT from "./pages/DAT";
 import Tracking from "./pages/Tracking";
+import { CarsProvider } from "./Context/CarsContext";
+import { UpdateCarProvider } from "./Context/UpdateCarContext";
 
 const router = createBrowserRouter([
     {
@@ -16,7 +18,7 @@ const router = createBrowserRouter([
                 element: <Tracking param1={"C"} />,
             },
             {
-                path: ":param1",
+                path: "tracking/:param1",
                 element: <Tracking />,
             },
             {
@@ -52,7 +54,13 @@ function RootLayout() {
 }
 
 function App() {
-    return <RouterProvider router={router} />;
+    return (
+        <CarsProvider>
+            <UpdateCarProvider>
+                <RouterProvider router={router} />
+            </UpdateCarProvider>
+        </CarsProvider>
+    )
 }
 
 export default App;
