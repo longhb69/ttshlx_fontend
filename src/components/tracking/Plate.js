@@ -5,15 +5,16 @@ import { setCustomNativeDragPreview } from "@atlaskit/pragmatic-drag-and-drop/el
 import { preserveOffsetOnSource } from "@atlaskit/pragmatic-drag-and-drop/element/preserve-offset-on-source";
 import { DragHandleButton } from "@atlaskit/pragmatic-drag-and-drop-react-accessibility/drag-handle-button";
 import mergeRefs from "@atlaskit/ds-lib/merge-refs";
-import { Ellipsis, Pencil, Trash2 } from "lucide-react";
+import { Ellipsis, Pencil, Trash2, X } from "lucide-react";
 import Tag from "./Tag";
 import { createPortal } from "react-dom";
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine";
 import { CalendarClock, User } from "lucide-react";
 import { db } from "../../config/firebase";
-import { doc, deleteDoc } from "firebase/firestore";
+import { doc, deleteDoc, updateDoc, getDoc } from "firebase/firestore";
 import { useOnClickOutside } from "usehooks-ts";
 import EditCarModal from "../modal/EditCarModal.tsx";
+import { useHover } from "usehooks-ts";
 
 const colors = ["#EF9995", "#A4CBB4", "#DC8850", "#D97706"];
 
@@ -114,10 +115,14 @@ const PlatePrimitive = ({ car }) => {
     );
 };
 
-export default function Plate({ car }) {
+export default function Plate({ car, noteMode = false, currentNoteId }) {
     const ref = useRef(null);
     const dragHandleRef = useRef(null);
     const [state, setState] = useState(idleState);
+    const deleteHoverRef = useRef(null);
+    const isHover = useHover(deleteHoverRef);
+    const [isVisible, setIsVisible] = useState(true);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => {
         const el = ref.current;
@@ -152,8 +157,40 @@ export default function Plate({ car }) {
         );
     }, [car]);
 
+    const DeleteFromNote = async () => {
+        setIsDeleting(true);
+        const docRef = doc(db, "notes", currentNoteId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            console.log(docSnap.data());
+            const updateCars = docSnap.data().cars.filter((c) => c !== car.plate);
+            await updateDoc(docRef, {
+                cars: updateCars,
+            });
+            setIsVisible(false);
+        }
+    };
+
+    useEffect(() => {
+        console.log(noteMode);
+    }, []);
+
+    if (!isVisible) return null;
+
     return (
-        <li className={`flex w-full cursor-auto  ${state.type === "dragging" ? "opacity-40" : ""}`}>
+        <li className={`flex w-full cursor-auto ${state.type === "dragging" ? "opacity-40" : ""} ${isDeleting ? "fade-out" : ""}`}>
+            {noteMode ? (
+                <div
+                    ref={deleteHoverRef}
+                    className="flex items-center justify-center bg-red-400 mt-2 p-1 mr-1 cursor-pointer rounded relative hover:bg-red-500"
+                    onClick={() => DeleteFromNote()}
+                >
+                    <span className="flex items-center w-[11px] h-[15px]">
+                        <X />
+                    </span>
+                    {isHover ? <div className="absolute text-[0.7rem] bg-white rounded w-[50px] z-[9] top-full">Xóa khỏi ghi chú</div> : null}
+                </div>
+            ) : null}
             <div className="border mt-2 flex gap-4 items-center transition-colors duration-75 hover:bg-[#111111]/[.1]  border-[#2E282A] text-[#282425] rounded-lg shadow p-2 bg-[#E4D8B4] w-full">
                 <DragHandleButton ref={mergeRefs([dragHandleRef, ref])} />
                 <PlatePrimitive car={car} />

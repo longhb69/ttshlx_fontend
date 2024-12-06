@@ -25,7 +25,8 @@ export default function Tracking() {
     const [isCourseModal, setIsCourseModal] = useState(false);
     const [currentNoteId, setCurrentNoteId] = useState("");
     const [tags, setTags] = useState([]);
-    const {gobalCars, setGobalCars} = useContext(CarsContext)
+    const [noteMode, setNoteMode] = useState(false);
+    const { gobalCars, setGobalCars } = useContext(CarsContext);
 
     const teachersCollectionRef = collection(db, "teachers");
     const carsCollectionRef = collection(db, "cars");
@@ -38,10 +39,10 @@ export default function Tracking() {
         const unsubscribe = onSnapshot(
             orderedQuery,
             (querySnapshot) => {
-                const query = querySnapshot.docs.map((doc) => doc.data())
-                console.log(query)
+                const query = querySnapshot.docs.map((doc) => doc.data());
+                console.log(query);
                 setCars(query);
-                setGobalCars(query)
+                setGobalCars(query);
             },
             (error) => {
                 console.error("Error fetching real-time updates:", error);
@@ -89,6 +90,7 @@ export default function Tracking() {
     }, [courses]);
 
     const handleSearch = async (searchTerm) => {
+        setNoteMode(false);
         if (searchTerm.trim() === "") {
             setFilterCar([]);
             return;
@@ -97,7 +99,6 @@ export default function Tracking() {
             return car.plate.includes(searchTerm) || car.owner_name.toLowerCase().includes(searchTerm.toLowerCase());
         });
 
-        console.log(filteredResults);
         setFilterCar(filteredResults);
     };
 
@@ -139,8 +140,10 @@ export default function Tracking() {
         });
         if (filteredResults.length === 0) {
             setFilterCar([]);
+            setNoteMode(false);
         } else {
             setFilterCar(filteredResults);
+            setNoteMode(true);
         }
     };
     const resetNote = () => {
@@ -172,6 +175,8 @@ export default function Tracking() {
                                           return (
                                               <Plate
                                                   car={car}
+                                                  noteMode={noteMode}
+                                                  currentNoteId={currentNoteId}
                                                   className="border rounded-lg p-2 shadow-md hover:shadow-lg transition-shadow duration-200"
                                               />
                                           );
@@ -181,6 +186,7 @@ export default function Tracking() {
                                           return (
                                               <Plate
                                                   car={car}
+                                                  noteMode={false}
                                                   className="border rounded-lg p-2 shadow-md hover:shadow-lg transition-shadow duration-200 mr-2"
                                               />
                                           );

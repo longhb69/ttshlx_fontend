@@ -157,6 +157,11 @@ body,
     display: none; /* For Chrome, Safari, and Opera */
 }
 
+.fade-out {
+    transition: opacity 0.2s ease-out; /* Adjust duration and easing as needed */
+    opacity: 0; /* Fade out effect */
+}
+
 .test {
     overflow-x: visible;
     overflow-y: scroll;

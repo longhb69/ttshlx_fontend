@@ -15,7 +15,7 @@ const router = createBrowserRouter([
         children: [
             {
                 index: true,
-                element: <Tracking param1={"C"} />,
+                element: <Home />,
             },
             {
                 path: "tracking/:param1",
@@ -60,7 +60,7 @@ function App() {
                 <RouterProvider router={router} />
             </UpdateCarProvider>
         </CarsProvider>
-    )
+    );
 }
 
 export default App;
