@@ -55,25 +55,30 @@ const PlatePrimitive = ({ car }) => {
     return (
         <>
             <h2 className="text-[0.9rem] font-semibold w-[10%]">{plate}</h2>
-            <p className="text-sm flex items-center gap-1 w-[10%]">
+            <p className="text-[0.8rem] flex flex-col items-center gap-1 w-[25%]">
                 <span className={isExpired ? "text-red-500" : ""}>
-                    <CalendarClock className="w-[16px] h-[16px]" />
-                </span>{" "}
+                    {/* <CalendarClock className="w-[16px] h-[16px]" /> */}
+                    <span>Ngày hết đăng kiểm: </span>
+                </span>
                 <span className={isExpired ? "text-red-500" : ""}>{formatFirebaseTimestamp(expiry_date.seconds)}</span>
             </p>
-            <p className="text-sm ml-2 flex gap-1 items-center overflow-hidden wrap w-[10%]">
+            <p className="text-[0.8rem] flex gap-1 items-center overflow-hidden wrap w-[10%]">
                 <span>
                     <User className="w-[15px] h-[15px]" />
                 </span>
                 {owner_name}
             </p>
-            <p className="text-sm w-[5%]">
-                Hạng: <span className="font-semibold">{car_class}</span>
-            </p>
-            <p className="text-sm w-[10%]">
-                Số học viên: <span className="font-semibold">{current_slot}</span>
-            </p>
-            <div className={`flex gap-x-2 max-w-full mt-1 ${courses?.length > 0 ? "" : ""} w-[30%]`}>
+            <div className="text-[0.8rem] w-[5%]">
+                <p>
+                    Hạng: <span className="font-semibold">{car_class}</span>
+                </p>
+            </div>
+            <div className="text-[0.8rem] w-[10%]">
+                <p>
+                    Số học viên: <span className="font-semibold">{current_slot}</span>
+                </p>
+            </div>
+            <div className={`flex gap-x-2 text-[0.8rem] max-w-full mt-1 ${courses?.length > 0 ? "" : ""} w-[30%]`}>
                 <div>Khoá học: </div>
                 <div className="flex gap-2">
                     {courses?.length > 0 &&
@@ -191,7 +196,7 @@ export default function Plate({ car, noteMode = false, currentNoteId }) {
                     {isHover ? <div className="absolute text-[0.7rem] bg-white rounded w-[50px] z-[9] top-full">Xóa khỏi ghi chú</div> : null}
                 </div>
             ) : null}
-            <div className="border mt-2 flex gap-4 items-center transition-colors duration-75 hover:bg-[#111111]/[.1]  border-[#2E282A] text-[#282425] rounded-lg shadow p-2 bg-[#E4D8B4] w-full">
+            <div className="border mt-2 flex gap-2 items-center transition-colors duration-75 hover:bg-[#111111]/[.1]  border-[#2E282A] text-[#282425] rounded-lg shadow p-2 bg-[#E4D8B4] w-full">
                 <DragHandleButton ref={mergeRefs([dragHandleRef, ref])} />
                 <PlatePrimitive car={car} />
                 {state.type === "preview" && createPortal(<PlatePreview rect={state.rect} car={car} />, state.container)}

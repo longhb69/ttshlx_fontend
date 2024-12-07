@@ -6,7 +6,7 @@ import { Minus, Plus } from "lucide-react";
 import { UpdateCarContext } from "../../Context/UpdateCarContext";
 const decodeKey = (key) => key.replace(/_DOT_/g, ".");
 
-export default function CarItem({ plate, value, cars, decreaseStudent, increaseStudent, courseId }) {
+export default function CarItem({ plate, value, cars, decreaseStudent, increaseStudent, courseId, saveChange, setSaveChange, setUpdateQueue }) {
     const [text, setText] = useState(value.note);
     const [number, setNumber] = useState(value.number_of_students)
     const [carData, setCarData] = useState();
@@ -30,18 +30,51 @@ export default function CarItem({ plate, value, cars, decreaseStudent, increaseS
     const handleEdit = (e) => {
         if(isNaN(number) || number === "") {
             setNumber(value.number_of_students) 
+            AddToQueue(value.number_of_students)
             return
         }
 
         if(Number(number) !== value.number_of_students) {
-            console.log("Update number")
-            const docRef = doc(db, "courses", courseId)
-            updateDoc(docRef, {
-                [`cars.${plate}.number_of_students`] : number
-            })
-            UpdateInfoToCar(decodeKey(plate), courseId, Number(number))
+            setSaveChange(true)
+            //const docRef = doc(db, "courses", courseId)
+            //updateDoc(docRef, {
+            //    [`cars.${plate}.number_of_students`] : number
+            //})
+            //UpdateInfoToCar(decodeKey(plate), courseId, Number(number))
         }
     }
+
+    const handleIncrease = () => {
+        setSaveChange(true)
+        setNumber(Number(number) + 1)
+        AddToQueue(Number(number) + 1)
+    }
+
+    const handleDecrease = () => {
+        setSaveChange(true)
+        const newValue = number - 1
+        if(newValue <= 0) {
+            setNumber(0)
+        } 
+        else {
+            setNumber(newValue)
+        }
+        AddToQueue(newValue)
+    }
+
+    const handleChangeNumber = (number) => {
+        setSaveChange(true)
+        setNumber(number)
+        AddToQueue(number)
+    }
+
+    const AddToQueue = (updateNumber) => {
+        setUpdateQueue((prevQueue) => ({
+            ...prevQueue,
+            [plate]: Number(updateNumber) 
+        }))
+    }
+
 
     useEffect(() => {
         gobalCars.map((car) => {
@@ -65,7 +98,7 @@ export default function CarItem({ plate, value, cars, decreaseStudent, increaseS
                 <div className="flex items-center justify-evenly">
                     <div className="border">
                         <div className="w-[30px] h-[30px] flex items-center justify-center hover:bg-[#111111]/[.2]  rounded transition-colors duration-200">
-                            <button className="w-full h-full flex items-center justify-center" onClick={() => decreaseStudent(plate)()}>
+                            <button className="w-full h-full flex items-center justify-center" onClick={() => handleDecrease()}>
                                 <Minus className="w-[15px] h-[15px]"/>
                             </button>
                         </div>
@@ -76,11 +109,11 @@ export default function CarItem({ plate, value, cars, decreaseStudent, increaseS
                             type="text"
                             value={number}
                             onBlur={handleEdit}
-                            onChange={(e) => setNumber(e.target.value)}
+                            onChange={(e) => handleChangeNumber(e.target.value)}
                         />
                     </div>
                     <div className="w-[30px] h-[30px] border flex items-center justify-center hover:bg-[#111111]/[.2]  rounded transition-colors duration-200">
-                        <button className="w-full h-full flex items-center justify-center" onClick={() => increaseStudent(plate)}>
+                        <button className="w-full h-full flex items-center justify-center" onClick={() => handleIncrease()}>
                             <Plus className="w-[15px] h-[15px]"/>
                         </button>
                     </div>

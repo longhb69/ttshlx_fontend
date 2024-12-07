@@ -7,7 +7,6 @@
     "@atlaskit/button": "^20.3.2",
     "@atlaskit/calendar": "^15.1.0",
     "@atlaskit/datetime-picker": "^15.9.5",
-    "@atlaskit/drawer": "^9.2.5",
     "@atlaskit/form": "^10.5.12",
     "@atlaskit/modal-dialog": "^12.17.13",
     "@atlaskit/pragmatic-drag-and-drop": "^1.4.0",

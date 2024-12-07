@@ -1,8 +1,6 @@
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
-import Drawer from "@atlaskit/drawer";
-import { widths } from "@atlaskit/drawer/constants";
 
 export default function SideBar() {
     const [collapse, setCollapse] = useState(true);
@@ -11,7 +9,7 @@ export default function SideBar() {
         <div
             className={`${
                 collapse ? "relative w-[16px] z-[5]" : "relative w-[150px]"
-            } h-full min-h-full font-[14px] font-normal leading-5 bg-[#67879D]/[0.9]`}
+            } h-full min-h-full font-[14px] leading-5 bg-[#67879D]/[0.9]`}
         >
             <div className="absoulte top-0 bottom-0 left-0 transition">
                 <div className={`${collapse ? "hidden" : ""} flex flex-col min-h-full h-full overflow-auto backdrop-blur-[6px]`}>

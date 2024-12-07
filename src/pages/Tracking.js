@@ -26,7 +26,7 @@ export default function Tracking() {
     const [currentNoteId, setCurrentNoteId] = useState("");
     const [tags, setTags] = useState([]);
     const [noteMode, setNoteMode] = useState(false);
-    const { gobalCars, setGobalCars } = useContext(CarsContext);
+    const { gobalCars, setGobalCars, setGobalCourse } = useContext(CarsContext);
 
     const teachersCollectionRef = collection(db, "teachers");
     const carsCollectionRef = collection(db, "cars");
@@ -40,7 +40,6 @@ export default function Tracking() {
             orderedQuery,
             (querySnapshot) => {
                 const query = querySnapshot.docs.map((doc) => doc.data());
-                console.log(query);
                 setCars(query);
                 setGobalCars(query);
             },
@@ -87,6 +86,7 @@ export default function Tracking() {
                 return course.id;
             })
         );
+        setGobalCourse(courses)
     }, [courses]);
 
     const handleSearch = async (searchTerm) => {
