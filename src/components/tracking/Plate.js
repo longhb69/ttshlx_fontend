@@ -28,6 +28,16 @@ const PlatePrimitive = ({ car }) => {
     const [editTrigger, setEditTrigger] = useState(false);
     const [isExpired, setIsExpired] = useState(expiry_date.seconds * 1000 < Date.now());
 
+    
+    const handleClickOutside = (event) => {
+        if (optionRef.current && !optionRef.current.contains(event.target)) {
+            setIsOption(false);
+        }
+    };
+
+    useOnClickOutside(optionRef, handleClickOutside);
+
+ 
     //to do delete in course also
     const handleDelete = async () => {
         try {
@@ -43,79 +53,82 @@ const PlatePrimitive = ({ car }) => {
     const handleEdit = () => {
         setEditTrigger(true);
     };
-
-    const handleClickOutside = (event) => {
-        if (optionRef.current && !optionRef.current.contains(event.target)) {
-            setIsOption(false);
-        }
-    };
-
-    useOnClickOutside(optionRef, handleClickOutside);
-
+ 
     return (
         <>
-            <h2 className="text-[0.9rem] font-semibold w-[10%]">{plate}</h2>
-            <p className="text-[0.8rem] flex flex-col items-center gap-1 w-[25%]">
-                <span className={isExpired ? "text-red-500" : ""}>
-                    {/* <CalendarClock className="w-[16px] h-[16px]" /> */}
-                    <span>Ngày hết đăng kiểm: </span>
-                </span>
-                <span className={isExpired ? "text-red-500" : ""}>{formatFirebaseTimestamp(expiry_date.seconds)}</span>
-            </p>
-            <p className="text-[0.8rem] flex gap-1 items-center overflow-hidden wrap w-[10%]">
-                <span>
-                    <User className="w-[15px] h-[15px]" />
-                </span>
-                {owner_name}
-            </p>
-            <div className="text-[0.8rem] w-[5%]">
-                <p>
-                    Hạng: <span className="font-semibold">{car_class}</span>
-                </p>
-            </div>
-            <div className="text-[0.8rem] w-[10%]">
-                <p>
-                    Số học viên: <span className="font-semibold">{current_slot}</span>
-                </p>
-            </div>
-            <div className={`flex gap-x-2 text-[0.8rem] max-w-full mt-1 ${courses?.length > 0 ? "" : ""} w-[30%]`}>
-                <div>Khoá học: </div>
-                <div className="flex gap-2">
-                    {courses?.length > 0 &&
-                        courses.map((course, index) => {
-                            return (
-                                <Tag
-                                    key={index}
-                                    text={`${course.name}`}
-                                    number_of_students={course.number_of_students}
-                                    background={colors[index % colors.length]}
-                                />
-                            );
-                        })}
+        
+            <div className="flex gap-2 justify-between items-center w-full">
+                <div className="">
+                    <h2 className="text-[0.9rem] font-semibold ">{plate}</h2>
                 </div>
+                <div className="">
+                    <p className="text-[0.8rem] flex  items-center gap-1 ">
+                        <span className={isExpired ? "text-red-500" : ""}>
+                            {/* <CalendarClock className="w-[16px] h-[16px]" /> */}
+                            <span>Ngày hết đăng kiểm: </span>
+                        </span>
+                        <span className={`${isExpired ? "text-red-500" : ""} font-semibold`}>{formatFirebaseTimestamp(expiry_date.seconds)}</span>
+                    </p>
+                </div>
+                <div className="flex gap-1 overflow-hidden wrap text-[0.8rem] font-semibold">
+                    <p className="">
+                        <span>
+                            <User className="w-[15px] h-[15px]" />
+                        </span>
+                    </p>
+                    <p>
+                        {owner_name}
+                    </p>
+                </div>
+                <div className="text-[0.8rem] ">
+                    <p>
+                        Hạng: <span className="font-semibold">{car_class}</span>
+                    </p>
+                </div>
+                <div className="text-[0.8rem] ">
+                    <p>
+                        Số học viên: <span className="font-semibold">{current_slot}</span>
+                    </p>
+                </div>
+                <div className={`flex gap-x-2 text-[0.8rem] max-w-full mt-1 ${courses?.length > 0 ? "" : ""} w-[30%]`}>
+                    <div>Khoá học: </div>
+                    <div className="flex gap-2">
+                        {courses?.length > 0 &&
+                            courses.map((course, index) => {
+                                return (
+                                    <Tag
+                                        key={index}
+                                        text={`${course.name}`}
+                                        number_of_students={course.number_of_students}
+                                        background={colors[index % colors.length]}
+                                    />
+                                );
+                            })}
+                    </div>
+                </div>
+                {editTrigger ? <EditCarModal trigger={editTrigger} setTrigger={setEditTrigger} car={car} /> : null}
             </div>
-            <div className="flex items-center h-full justify-center cursor-pointer relative" onClick={() => setIsOption(!isOption)} ref={optionRef}>
+            <div className="flex mr-6 items-center h-full justify-center cursor-pointer relative" onClick={() => setIsOption(!isOption)} ref={optionRef}>
                 <Ellipsis />
                 {isOption ? (
-                    <div className="absolute bg-white border text-sm rounded z-[100] shadow-lg top-full p-2 w-[140px] option-container">
+                    <div className="absolute text-[0.7rem] bg-white border text-sm rounded z-[100] shadow-lg top-full -right-full p-1 w-[130px] option-container">
                         <div className="hover:bg-[#111111]/[.1] p-2 rounded flex items-center" onClick={() => handleEdit()}>
-                            <span className="w-[20px] h-[20px] mr-5">
+                            <span className="w-[18px] h-[18px] mr-2">
                                 <Pencil className="w-full h-full" />
                             </span>
-                            <span className="font-semibold">Chỉnh sửa</span>
+                            <span className="   text-[0.8rem] font-semibold">Chỉnh sửa</span>
                         </div>
                         <div className="hover:bg-[#111111]/[.1] p-2 rounded flex items-center " onClick={() => handleDelete()}>
-                            <span className="w-[20px] h-[20px] mr-5">
+                            <span className="w-[18px] h-[18px] mr-2">
                                 <Trash2 className="w-full h-full" />
                             </span>
                             <div className="flex justify-start">
-                                <span className="text-start font-semibold">Xoá</span>
+                                <span className="text-start text-[0.8rem] font-semibold">Xoá</span>
                             </div>
                         </div>
                     </div>
                 ) : null}
             </div>
-            {editTrigger ? <EditCarModal trigger={editTrigger} setTrigger={setEditTrigger} car={car} /> : null}
         </>
     );
 };
@@ -196,7 +209,7 @@ export default function Plate({ car, noteMode = false, currentNoteId }) {
                     {isHover ? <div className="absolute text-[0.7rem] bg-white rounded w-[50px] z-[9] top-full">Xóa khỏi ghi chú</div> : null}
                 </div>
             ) : null}
-            <div className="border mt-2 flex gap-2 items-center transition-colors duration-75 hover:bg-[#111111]/[.1]  border-[#2E282A] text-[#282425] rounded-lg shadow p-2 bg-[#E4D8B4] w-full">
+            <div className="border mt-1.5 gap-2 flex items-center transition-colors duration-75 hover:bg-[#111111]/[.1]  border-[#2E282A] text-[#282425] rounded-lg shadow p-1 w-full">
                 <DragHandleButton ref={mergeRefs([dragHandleRef, ref])} />
                 <PlatePrimitive car={car} />
                 {state.type === "preview" && createPortal(<PlatePreview rect={state.rect} car={car} />, state.container)}

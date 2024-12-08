@@ -10,11 +10,12 @@ import ScrollableList from "../components/ScrollableList.tsx";
 import AddCourseModal from "../components/modal/AddCourseModal.tsx";
 import { useParams } from "react-router-dom";
 import { CarsContext } from "../Context/CarsContext.js";
+import Button from "../components/Button.js";
+import CourseModal from "../components/modal/CourseModal.js";
 
 export default function Tracking() {
     const { param1 } = useParams();
     const [currentClass, setCurrentClass] = useState("C");
-    const [teacherList, setTeacherList] = useState([]);
     const [cars, setCars] = useState([]);
     const [courses, setCourses] = useState([]);
     const [notes, setNotes] = useState([]);
@@ -28,11 +29,9 @@ export default function Tracking() {
     const [noteMode, setNoteMode] = useState(false);
     const { gobalCars, setGobalCars, setGobalCourse } = useContext(CarsContext);
 
-    const teachersCollectionRef = collection(db, "teachers");
     const carsCollectionRef = collection(db, "cars");
     const coursesCollectionRef = collection(db, "courses");
     const notesCollectionRef = collection(db, "notes");
-    const addCarModalRef = useRef();
 
     useEffect(() => {
         const orderedQuery = query(carsCollectionRef, where("car_class", "==", param1));
@@ -156,73 +155,77 @@ export default function Tracking() {
 
     return (
         <>
-            <div className="flex flex-col justify-between px-8 py-4 h-full bg-[#ECE3CA]">
-                <div className="flex nowrap h-[60%] min-h-[60%]">
-                    <div className="flex flex-row gap-5 h-full w-full min-w-[300px] rounded py-2.5 mb-5">
-                        <Notes notes={notes} filterByNote={filterByNote} currentNoteId={currentNoteId} currentClass={currentClass} />
-                        <ToolBar
-                            handleSearch={handleSearch}
-                            coursesName={coursesName}
-                            filterClass={filterClass}
-                            tags={tags}
-                            setTags={setTags}
-                            resetNote={resetNote}
-                        />
-                        <div className="max-w-[85%] min-w-[70%] min-h-full overflow-hidden max-h-full bg-[#E4D8B4] ">
-                            <ol className={`px-4 h-full min-h-full w-full overflow-y-scroll plate-scroll rounded-md shadow-md`}>
-                                {filterCar.length > 0
-                                    ? filterCar.map((car) => {
-                                          return (
-                                              <Plate
-                                                  car={car}
-                                                  noteMode={noteMode}
-                                                  currentNoteId={currentNoteId}
-                                                  className="border rounded-lg p-2 shadow-md hover:shadow-lg transition-shadow duration-200"
-                                              />
-                                          );
-                                      })
-                                    : cars.length > 0 &&
-                                      cars.map((car) => {
-                                          return (
-                                              <Plate
-                                                  car={car}
-                                                  noteMode={false}
-                                                  className="border rounded-lg p-2 shadow-md hover:shadow-lg transition-shadow duration-200 mr-2"
-                                              />
-                                          );
-                                      })}
-                            </ol>
+            <div className="flex justify-between pl-8 pr-4 gap-4 py-4 h-full bg-white">
+                <div className="flex flex-col nowrap gap-5 basis-[80%]">
+                    <div className="flex flex-col h-[45%] gap-2 w-full rounded">
+                        <div className="toolbar-sections rounded-lgh-[15%]  w-full bg-[#EFEAE6]">
+                            <ToolBar
+                                handleSearch={handleSearch}
+                                coursesName={coursesName}
+                                filterClass={filterClass}
+                                tags={tags}
+                                setTags={setTags}
+                                resetNote={resetNote}
+                            />
+                        </div>
+                        <div className="mt-1 flex w-full h-[85%]">
+                            <div className="w-full overflow-hidden max-h-full overflow-y-scroll custom-scrollbar scrollbar-hidden">
+                                <ol className={`h-full min-h-full w-full plate-scroll rounded-md shadow-md`}>
+                                    {filterCar.length > 0
+                                        ? filterCar.map((car) => {
+                                            return (
+                                                <Plate
+                                                    car={car}
+                                                    noteMode={noteMode}
+                                                    currentNoteId={currentNoteId}
+                                                    className="border rounded-lg p-2 shadow-md hover:shadow-lg transition-shadow duration-200"
+                                                />
+                                            );
+                                        })
+                                        : cars.length > 0 &&
+                                        cars.map((car) => {
+                                            return (
+                                                <Plate
+                                                    car={car}
+                                                    noteMode={false}
+                                                    className="border rounded-lg p-2 shadow-md hover:shadow-lg transition-shadow duration-200 mr-2"
+                                                />
+                                            );
+                                    })}
+                                </ol>
+                            </div>
                         </div>
                     </div>
+                    <div className="h-[55%] w-full">
+                        <CourseModal/>
+                    </div>
                 </div>
-                <div className="flex mt-5 relative border-box w-full h-[50%] rounded mr-5 justify-between">
-                    <div className="flex h-full w-[100%]">
-                        <div
-                            className="h-full bg-[#111111]/[.2] w-[28px] min-w-[28px] rounded flex items-center cursor-pointer mr-4 transition-colors duration-100 hover:bg-[#2E282A] hover:text-white"
-                            onClick={() => setIsCourseModal(true)}
-                        >
-                            <span className="w-full">
-                                <Plus className="w-full h-full" />
-                            </span>
+                {/* <div className="border border-1 w-[98%] mx-auto border-gray-300 mt-3.5"></div> */}
+                <div className="basis-[20%] flex flex-col gap-4 relative border-box rounded justify-between">
+                    <Notes notes={notes} filterByNote={filterByNote} currentNoteId={currentNoteId} currentClass={currentClass} />
+                    {/* <div className="w-[85%]">
+                        <CourseModal/>
+                    </div> */}
+                    <div className="overflow-hidden h-[70%] bg-[#EFEAE6] p-1 rounded-md">
+                        <div className="flex items-center h-[10%] px-[12px] text-[14px] font-semibold mb-1 p-[6px] justify-between">
+                            <span className="text-lg">Khóa học</span>
+                            <Button onClick={() => setIsCourseModal(true)}>Thêm khóa học</Button>
                         </div>
-                        <ScrollableList>
-                            <ol className="flex basis-[95%] h-full pb-2 w-full gap-2">
+                       <ScrollableList>
+                            <ol className="flex flex-col basis-[95%] pb-2 w-full gap-2">
                                 {courses.length > 1 &&
                                     courses.map((course) => {
                                         return (
-                                            <li className="block shirk-0 px-[6px] h-full whitespace-nowrap">
+                                            <li className="block shirk-0 px-[6px]  whitespace-nowrap">
                                                 <CourseList course={course} currentCars={cars} />
                                             </li>
                                         );
                                     })}
                             </ol>
-                        </ScrollableList>
+                        </ScrollableList> 
                     </div>
                     <AddCourseModal trigger={isCourseModal} setTrigger={setIsCourseModal} />
-                    {/* <div className="w-[40%] h-full bg-[#FAF7F5] rounded">
-                        info
-                    </div> */}
-                </div>
+                </div> 
             </div>
         </>
     );

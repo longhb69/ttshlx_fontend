@@ -48,21 +48,21 @@ export default function ToolBar({ handleSearch, coursesName, filterClass, tags, 
     useOnClickOutside(ref, handleClickOutside);
 
     return (
-        <div className="h-full flex flex-col max-w-[20%]">
-            <div className="h-[10%] flex items-center justify-center bg-[#E4D8B4] font-semibold rounded shadow">
-                <Link to="/tracking/B11" className={`${param1 === "B11" ? "bg-[#2E282A] text-white" : "hover:bg-[#111111]/[.1] text-[#111111]/[.8]"} w-[33%] transition flex items-center justify-center h-full cursor-pointer`}>B11</Link>
-                <Link to="/tracking/B1+B2" className={`${param1 === "B1+B2" ? "bg-[#2E282A] text-white" : "hover:bg-[#111111]/[.1] text-[#111111]/[.8]"} w-[33%] transition flex items-center justify-center h-full cursor-pointer`}>B1+B2</Link>
-                <Link to="/tracking/C" className={`${param1 === "C" ? "bg-[#2E282A] text-white" : "hover:bg-[#111111]/[.1] text-[#111111]/[.8]"} w-[33%] flex transition items-center justify-center h-full cursor-pointer`}>C</Link>
+        <div className="h-full min-h-full flex items-center gap-5">
+            <div className="flex h-full w-[15%] items-center justify-center font-semibold rounded-md bg-[#E5E6E6] shadow">
+                <Link to="/tracking/B11" className={`w-[100px] px-1 flex items-center justify-center h-full cursor-pointer rounded-l transition ${param1 === "B11" ? "bg-[#4A0FFF] text-white" : "hover:bg-[#111111]/[.1] text-[#111111]/[.8]"}`}>B11</Link>
+                <Link to="/tracking/B1+B2" className={`w-[100px] px-1 transition flex items-center justify-center h-full cursor-pointer  ${param1 === "B1+B2" ? "bg-[#4A0FFF] text-white" : "hover:bg-[#111111]/[.1] text-[#111111]/[.8]"} `}>B1+B2</Link>
+                <Link to="/tracking/C" className={`w-[100px] px-1 transition flex items-center justify-center h-full cursor-pointer rounded-r ${param1 === "C" ? "bg-[#4A0FFF] text-white" : "hover:bg-[#111111]/[.1] text-[#111111]/[.8]"} `}>C</Link>
             </div>
-            <div className=" flex flex-col h-[90%] p-2 mt-5 rounded-md gap-2 bg-[#E4D8B4] shadow" ref={ref}>
+            <div className=" flex items-center p-2 justify-center rounded-md gap-2 " ref={ref}>
                 <input
                     type="text"
                     placeholder="Tìm kiếm xe..."
-                    className="mb-2 p-2 border rounded-lg w-[180px] h-[35px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="p-2 border rounded-lg w-[220px] h-[35px] focus:outline-none focus:ring-2 focus:ring-[#00D8BF]"
                     onChange={(e) => handleSearch(e.target.value)}
                 />
                 <div className="flex gap-1 relative">
-                    <div className="flex relative flex-col items-center">
+                    <div className="flex relative items-center">
                         <Button className="w-[8px] h-[8px]" onClick={toggleDropdown}>
                             <span cassName="w-[8px] h-[8px]">
                                 <Filter />

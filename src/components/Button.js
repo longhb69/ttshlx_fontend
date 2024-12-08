@@ -1,6 +1,6 @@
 import React from "react";
 
-const Button = ({ children, onClick, type = "button", variant = "primary", className = "mb-5", disabled = false }) => {
+const Button = ({ children, onClick, type = "button", variant = "primary", className = "", disabled = false }) => {
     const baseStyles = "px-4 py-2 rounded-md font-medium transition-colors duration-200";
 
     const variants = {

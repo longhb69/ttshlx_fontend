@@ -58,7 +58,7 @@ export default function CarModal(props: CarModalProps) {
         <Fragment>
             <Blanket isTinted={true} testId="basic-blanket">
                 <div className={`modal-container w-[600px] ${isClosing ? "closing" : ""}`}>
-                    <section className="modal w-full bg-[#FAF7F5]">
+                    <section className="modal pb-4 w-full bg-[#FAF7F5]">
                         <div className="flex relative items-center justify-between px-[1.5rem] pb-[1rem] pt-[1.5rem]">
                             <div className="grid grid-cols-2 w-full">
                                 <div className="flex border-box justify-start">

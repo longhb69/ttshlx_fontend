@@ -17,9 +17,9 @@ export default function CourseModal(props) {
     const [optionSate, setOptionState] = useState(false);
     const [saveChange, setSaveChange] = useState(false)
     const [updateQueue, setUpdateQueue] = useState({})
-    const [courseState, setCourseState] = useState(props.course.state)
+    const [courseState, setCourseState] = useState("props.course.state")
     const db = getFirestore();
-    const docRef = doc(db, "courses", props.course.id);
+    const docRef = doc(db, "courses", "props.course.id");
 
     //lister to any update that happen in date, state
     const [stateChange, setStateChange] = useState(false)
@@ -216,120 +216,116 @@ export default function CourseModal(props) {
         //console.log("Update Queue", updateQueue)
     }, [updateQueue])
 
-    useEffect(() => {
-        formatFirebaseTimestampV2(props.course.start_date)
-    }, [updateQueue])
 
-    return props.trigger ? (
+
+    return (
         <>
-            <Blanket isTinted={true}>
-                <div className={`modal-container w-[80%] min-w-[80%] relative cursor-default h-full ${isClosing ? "closing" : ""}`}>
-                    <section className="w-full h-full modal bg-[#FAF7F5]">
-                        <div className="flex relative items-center justify-between px-[1.5rem] pb-[1rem] pt-[1.5rem]">
-                            <div className="flex justify-between w-full">
-                                <div>
-                                    <div className="flex border-box justify-start">
-                                        <h1 className="text-[#172B4D] text-[25px] font-semibold">{props.course.id}</h1>
+            <div className={`relative w-full cursor-default h-full ${isClosing ? "closing" : ""}`}>
+                <section className="w-full h-full modal bg-[#EFEAE6]">
+                    <div className="flex relative items-center justify-between px-[1.5rem] pb-[1rem] pt-[1.5rem]">
+                        <div className="flex justify-between w-full">
+                            <div>
+                                <div className="flex border-box justify-start">
+                                    <h1 className="text-[#172B4D] text-[25px] font-semibold">{"props.course.id"}</h1>
+                                </div>
+                                <div className="flex gap-5">
+                                    <div className="cursor-pointer relative">
+                                        <span className="text-sm">Từ Ngày: </span>
+                                        {/* {formatFirebaseTimestamp(props.course.start_date.seconds)} */}
+                                        <div className="absolute z-[10] bg-white">
+                                            {/*<Calendar locale="vi-VN" defaultSelected={formatFirebaseTimestampV2(props.course.start_date)}/>*/}
+                                        </div>
                                     </div>
-                                    <div className="flex gap-5">
-                                        <div className="cursor-pointer relative">
-                                            <span className="text-sm">Từ Ngày: </span>
-                                            {formatFirebaseTimestamp(props.course.start_date.seconds)}
-                                            <div className="absolute z-[10] bg-white">
-                                                {/*<Calendar locale="vi-VN" defaultSelected={formatFirebaseTimestampV2(props.course.start_date)}/>*/}
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <span className="text-sm">Đến Ngày: </span>
-                                            {formatFirebaseTimestamp(props.course.end_date.seconds)}
-                                        </div>
+                                    <div>
+                                        <span className="text-sm">Đến Ngày: </span>
+                                        {/* {formatFirebaseTimestamp(props.course.end_date.seconds)} */}
                                     </div>
                                 </div>
-                                {saveChange ?
-                                    <div className="flex items-center justify-center">
-                                        <Button onClick={() => handleUpdate()}>
-                                            Lưu thay đổi
-                                        </Button>
-                                    </div> 
-                                : null}
-                                <div>
-                                    <Button>
-                                        Thêm xe
+                            </div>
+                            {saveChange ?
+                                <div className="flex items-center justify-center">
+                                    <Button onClick={() => handleUpdate()}>
+                                        Lưu thay đổi
                                     </Button>
+                                </div> 
+                            : null}
+                            <div>
+                                <Button>
+                                    Thêm xe
+                                </Button>
+                            </div>
+                            <div className="inline-block text-base pt-[3px] pr-[8px] relative" onClick={() => setOptionState(!optionSate)}>
+                                <div className="bg-green-300 text-green-800 px-2 py-1 cursor-pointer rounded-full select-none">
+                                    {courseState}
                                 </div>
-                                <div className="inline-block text-base pt-[3px] pr-[8px] relative" onClick={() => setOptionState(!optionSate)}>
-                                    <div className="bg-green-300 text-green-800 px-2 py-1 cursor-pointer rounded-full select-none">
-                                        {courseState}
-                                    </div>
-                                    {optionSate ? (
-                                        <div className="absolute select-none bg-white border text-sm rounded z-[100] shadow-lg p-2 w-[140px] option-container">
-                                            <div className="hover:bg-[#111111]/[.1] p-2 rounded flex items-center" onClick={() => handleSelectState("Chưa bắt đầu")}>
-                                                <span className="font-semibold">Chưa bắt đầu</span>
-                                            </div>
-                                            <div className="hover:bg-[#111111]/[.1] p-2 rounded flex items-center" onClick={() => handleSelectState("Đang thực hiện")}>
-                                                <div className="flex justify-start">
-                                                    <span className="text-start font-semibold">Đang thực hiện</span>
-                                                </div>
-                                            </div>
-                                            <div className="hover:bg-[#111111]/[.1] p-2 rounded flex items-center" onClick={() => handleSelectState("Tiếp tục")}>
-                                                <div className="flex justify-start">
-                                                    <span className="text-start font-semibold">Tiếp tục</span>
-                                                </div>
-                                            </div>
-                                            <div className="hover:bg-[#111111]/[.1] p-2 rounded flex items-center" onClick={() => handleSelectState("Đã hoàn thành")}>
-                                                <div className="flex justify-start">
-                                                    <span className="text-start font-semibold">Đã hoàn thành</span>
-                                                </div>
+                                {optionSate ? (
+                                    <div className="absolute select-none bg-white border text-sm rounded z-[100] shadow-lg p-2 w-[140px] option-container">
+                                        <div className="hover:bg-[#111111]/[.1] p-2 rounded flex items-center" onClick={() => handleSelectState("Chưa bắt đầu")}>
+                                            <span className="font-semibold">Chưa bắt đầu</span>
+                                        </div>
+                                        <div className="hover:bg-[#111111]/[.1] p-2 rounded flex items-center" onClick={() => handleSelectState("Đang thực hiện")}>
+                                            <div className="flex justify-start">
+                                                <span className="text-start font-semibold">Đang thực hiện</span>
                                             </div>
                                         </div>
-                                    ) : null}
-                                </div>
-                                <div className="flex border-box justify-end">
-                                    <button
-                                        className="w-[2rem] h-[2rem] my-auto transition hover:bg-gray-200 flex justify-center rounded"
-                                        onClick={() => handleClose()}
-                                    >
-                                        <span className="self-center">
-                                            <X />
-                                        </span>
-                                    </button>
-                                </div>
+                                        <div className="hover:bg-[#111111]/[.1] p-2 rounded flex items-center" onClick={() => handleSelectState("Tiếp tục")}>
+                                            <div className="flex justify-start">
+                                                <span className="text-start font-semibold">Tiếp tục</span>
+                                            </div>
+                                        </div>
+                                        <div className="hover:bg-[#111111]/[.1] p-2 rounded flex items-center" onClick={() => handleSelectState("Đã hoàn thành")}>
+                                            <div className="flex justify-start">
+                                                <span className="text-start font-semibold">Đã hoàn thành</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : null}
+                            </div>
+                            <div className="flex border-box justify-end">
+                                <button
+                                    className="w-[2rem] h-[2rem] my-auto transition hover:bg-gray-200 flex justify-center rounded"
+                                    onClick={() => handleClose()}
+                                >
+                                    <span className="self-center">
+                                        <X />
+                                    </span>
+                                </button>
                             </div>
                         </div>
-                        <div className="p-2 h-full">
-                            <div className="max-h-[80%] h-full overflow-y-scroll">
-                                <table className="min-w-full border-collapse bg-white shadow-md rounded-lg relative text-sm">
-                                    <thead className="bg-[#002933] text-white uppercase sticky top-0">
-                                        <tr>
-                                            <th className="border px-2 py-1 text-left">Biển số</th>
-                                            <th className="border px-2 py-1 text-center">Thầy giáo</th>
-                                            <th className="border px-2 py-1 text-center">Học viên</th>
-                                            <th className="border px-2 py-1 text-left">Note</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {props.course.cars &&
-                                            Object.entries(props.course.cars)
-                                                .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
-                                                .map(([key, value]) => (
-                                                    <CarItem
-                                                        plate={key}
-                                                        value={value}
-                                                        decreaseStudent={decreaseStudent}
-                                                        increaseStudent={increaseStudent}
-                                                        courseId={props.course.id}
-                                                        saveChange={saveChange}
-                                                        setSaveChange={setSaveChange}
-                                                        setUpdateQueue={setUpdateQueue}
-                                                    />
-                                                ))}
-                                    </tbody>
-                                </table>
-                            </div>
+                    </div>
+                    <div className="p-2 h-full">
+                        <div className="max-h-[80%] h-full overflow-y-scroll">
+                            <table className="min-w-full border-collapse bg-white shadow-md rounded-lg relative text-sm">
+                                <thead className="bg-[#002933] text-white uppercase sticky top-0">
+                                    <tr>
+                                        <th className="border px-2 py-1 text-left">Biển số</th>
+                                        <th className="border px-2 py-1 text-center">Thầy giáo</th>
+                                        <th className="border px-2 py-1 text-center">Học viên</th>
+                                        <th className="border px-2 py-1 text-left">Note</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {/* {props.course.cars &&
+                                        Object.entries(props.course.cars)
+                                            .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
+                                            .map(([key, value]) => (
+                                                <CarItem
+                                                    plate={key}
+                                                    value={value}
+                                                    decreaseStudent={decreaseStudent}
+                                                    increaseStudent={increaseStudent}
+                                                    courseId={props.course.id}
+                                                    saveChange={saveChange}
+                                                    setSaveChange={setSaveChange}
+                                                    setUpdateQueue={setUpdateQueue}
+                                                />
+                                            ))} */}
+                                </tbody>
+                            </table>
                         </div>
-                    </section>
-                </div>
-            </Blanket>
+                    </div>
+                </section>
+            </div>
         </>
-    ) : null;
+    ) 
 }

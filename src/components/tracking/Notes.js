@@ -47,9 +47,9 @@ export default function Notes({ notes, filterByNote, currentNoteId, currentClass
     useOnClickOutside(addRef, handleClickOutside);
 
     return (
-        <div className="w-[10%] bg-[#E4D8B4] p-2 flex flex-col  h-full text-ellipsis relative text-[14px] font-semibold rounded scrollbar-hidden">
-            <div className="flex p-[6px] justify-between mb-2">
-                <span className="text-sm">Ghi Chú</span>
+        <div className="w-full h-[30%] bg-[#EFEAE6] px-2 flex flex-col text-ellipsis relative text-[14px] font-semibold rounded-md scrollbar-hidden">
+            <div className="flex p-[6px] justify-between">
+                <span className="text-lg">Ghi Chú</span>
                 <div className="flex items-center gap-3">
                     <div
                         className="cursor-pointer w-[22px] h-[22px] bg-[#111111]/[.1] rounded-full transition duration-75 hover:bg-[#2E282A] hover:text-white"

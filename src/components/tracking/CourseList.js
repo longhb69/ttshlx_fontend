@@ -136,11 +136,11 @@ export default function CourseList({ course, currentCars }) {
 
     return (
         <div
-            className={`border-2 rounded-xl cursor-pointer h-full ${colState.type === "is-car-over" ? "border-[#4B0082]" : "border-transparent"}`}
+            className={`border-2 rounded-xl w-full cursor-pointer ${colState.type === "is-car-over" ? "border-[#4B0082]" : "border-transparent"}`}
             onClick={() => setIsModalOpen(true)}
         >
             <div
-                className={`flex flex-col h-full relate border-box w-[250px] max-h-[100%] pb-[8px] rounded-xl bg-[#FAF7F5] align-top whitespace-normal scroll-m-[8px]`}
+                className={`flex flex-col h-full w-full relate border-box  max-h-[100%] pb-[8px] rounded-xl bg-white align-top whitespace-normal scroll-m-[8px]`}
                 ref={columnRef}
             >
                 <div className="flex relative justify-around  flex-wrap items-start px-[8px] pt-[8px]">
@@ -153,7 +153,7 @@ export default function CourseList({ course, currentCars }) {
                     {/* <div className="w-[15px] h-[15px] mt-[10px] cursor-pointer">
                         <Pencil className="w-full h-full" />
                     </div> */}
-                    <div className="mx-auto mt-5 flex flex-col items-center gap-2">
+                    <div className="mx-auto mt-3 flex flex-col items-center gap-2">
                         <div className="flex gap-2">
                             <div>{formatFirebaseTimestamp(start_date.seconds)}</div>
                             <div>
@@ -165,7 +165,7 @@ export default function CourseList({ course, currentCars }) {
                             <ProgressBar value={calculateProcess()} />
                         </div>
                     </div>
-                    <div className="mt-5 w-full text-base flex justify-evenly items-center gap-2">
+                    <div className="mt-3 mb-3 w-full text-base flex justify-evenly items-center gap-2">
                         <div>
                             <span>Số xe: </span>
                             <span>{Object.keys(course.cars).length}</span>
@@ -175,18 +175,19 @@ export default function CourseList({ course, currentCars }) {
                             <span>{carCount}</span>
                         </div>
                     </div>
-                    <div className="w-full flex items-center justify-center mt-2 p-[8px]">
-                        {colState.type === "is-car-over" ? <div className="bg-slate-300 w-[70%] rounded h-[30px]"></div> : null}
+                    {/* <div className="w-full flex items-center justify-center mt-2 p-[8px]">
+                        {/* {colState.type === "is-car-over" ? <div className="bg-slate-300 w-[70%] rounded h-[30px]"></div> : null} 
                         {carSlot != null ? (
                             <div className="flex gap-2">
                                 <span>{carSlot.plate}</span>
                                 <span>{carSlot.current_slot}</span>
                             </div>
-                        ) : null}
+                        ) : null} 
                     </div>
+                    */}
                 </div>
             </div>
-            <CourseModal course={course} trigger={isModalOpen} setTrigger={setIsModalOpen} />
+            {/* <CourseModal course={course} trigger={isModalOpen} setTrigger={setIsModalOpen} /> */}
         </div>
     );
 }

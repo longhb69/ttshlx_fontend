@@ -70,14 +70,14 @@ export default function NoteItems({ note, editMode, setEditMode, filterByNote, c
                 if (!editMode) filterByNote(note.id);
             }}
             ref={ref}
-            className={`${note.id === currentNoteId ? "bg-[#2E282A] text-white" : "bg-[#111111]/[.1] hover:bg-transparent static"} 
+            className={`${note.id === currentNoteId ? "bg-[#EEAF3A]  text-white" : "bg-[#414954] text-slate-200 hover:bg-[#111111]/[.8] static"} 
                 ${colState.type === "is-car-over" ? "border-red-400" : "border-transparent"}
                 flex justify-between items-center bg-[#111111]/[.1] mb-2 border-2  cursor-pointer p-1 rounded-md select-none relative`
             }
         >
             <div>{note.content}</div>
             {editMode ? (
-                <div className="w-[12%] h-[12%] relative" ref={optionRef}>
+                <div className="w-[25px] h-[25px] relative" ref={optionRef}>
                     <Ellipsis className="w-full h-full" onClick={() => setIsOption(!isOption)} />
                     {isOption ? (
                         <div className="absolute bg-white border text-sm rounded z-[9999999] shadow-lg top-full p-2 -right-1 option-container">
