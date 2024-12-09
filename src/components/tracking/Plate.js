@@ -57,20 +57,11 @@ const PlatePrimitive = ({ car }) => {
     return (
         <>
         
-            <div className="flex gap-2 justify-between items-center w-full">
-                <div className="">
+            <div className="flex gap-2 items-center w-full">
+                <div className="basis-[10%]">
                     <h2 className="text-[0.9rem] font-semibold ">{plate}</h2>
                 </div>
-                <div className="">
-                    <p className="text-[0.8rem] flex  items-center gap-1 ">
-                        <span className={isExpired ? "text-red-500" : ""}>
-                            {/* <CalendarClock className="w-[16px] h-[16px]" /> */}
-                            <span>Ngày hết đăng kiểm: </span>
-                        </span>
-                        <span className={`${isExpired ? "text-red-500" : ""} font-semibold`}>{formatFirebaseTimestamp(expiry_date.seconds)}</span>
-                    </p>
-                </div>
-                <div className="flex gap-1 overflow-hidden wrap text-[0.8rem] font-semibold">
+                <div className="basis-[13%] flex gap-1 overflow-hidden wrap text-[0.8rem] font-semibold">
                     <p className="">
                         <span>
                             <User className="w-[15px] h-[15px]" />
@@ -80,19 +71,28 @@ const PlatePrimitive = ({ car }) => {
                         {owner_name}
                     </p>
                 </div>
-                <div className="text-[0.8rem] ">
+                <div className="basis-[20%]">
+                    <p className="text-[0.8rem] flex  items-center gap-1 ">
+                        <span className={isExpired ? "text-red-500" : ""}>
+                            {/* <CalendarClock className="w-[16px] h-[16px]" /> */}
+                            <span>Ngày hết đăng kiểm: </span>
+                        </span>
+                        <span className={`${isExpired ? "text-red-500" : ""} font-semibold`}>{formatFirebaseTimestamp(expiry_date.seconds)}</span>
+                    </p>
+                </div>
+                <div className="basis-[5%] text-[0.8rem] ">
                     <p>
                         Hạng: <span className="font-semibold">{car_class}</span>
                     </p>
                 </div>
-                <div className="text-[0.8rem] ">
+                <div className="basis-[10%] text-[0.8rem] ">
                     <p>
                         Số học viên: <span className="font-semibold">{current_slot}</span>
                     </p>
                 </div>
-                <div className={`flex gap-x-2 text-[0.8rem] max-w-full mt-1 ${courses?.length > 0 ? "" : ""} w-[30%]`}>
+                <div className={`flex gap-x-2 text-[0.8rem] max-w-full mt-1 ${courses?.length > 0 ? "" : ""} basis-[35%]`}>
                     <div>Khoá học: </div>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                         {courses?.length > 0 &&
                             courses.map((course, index) => {
                                 return (
@@ -111,7 +111,7 @@ const PlatePrimitive = ({ car }) => {
             <div className="flex mr-6 items-center h-full justify-center cursor-pointer relative" onClick={() => setIsOption(!isOption)} ref={optionRef}>
                 <Ellipsis />
                 {isOption ? (
-                    <div className="absolute text-[0.7rem] bg-white border text-sm rounded z-[100] shadow-lg top-full -right-full p-1 w-[130px] option-container">
+                    <div className="absolute select-none text-[0.7rem] bg-white border text-sm rounded z-[100] shadow-lg top-full -right-full p-1 w-[130px] option-container">
                         <div className="hover:bg-[#111111]/[.1] p-2 rounded flex items-center" onClick={() => handleEdit()}>
                             <span className="w-[18px] h-[18px] mr-2">
                                 <Pencil className="w-full h-full" />
@@ -220,7 +220,7 @@ export default function Plate({ car, noteMode = false, currentNoteId }) {
 
 const PlatePreview = ({ rect, car }) => {
     return (
-        <div className="border mt-2 flex gap-4 items-center overflow-hidden border-[#2E282A] text-[#282425] rounded-lg shadow-lg p-2 bg-[#E4D8B4] w-[200px] h-full">
+        <div className="border mt-2 flex gap-4 items-center overflow-hidden border-[#2E282A] text-white rounded-lg shadow-lg p-2 bg-[#3F0037] w-[200px] h-full">
             <h2 className="font-semibold text-[0.9rem]">{car.plate}</h2>
             <div className="">{car.owner_name}</div>
         </div>

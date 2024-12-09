@@ -8,7 +8,6 @@ import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import { arrayUnion } from "firebase/firestore/lite";
 import ProgressBar from "@atlaskit/progress-bar";
-import Button from "@atlaskit/button/new";
 import CourseModal from "../modal/CourseModal";
 
 const idle = { type: "idle" };
@@ -17,9 +16,16 @@ const isCarOver = { type: "is-car-over" };
 const encodeKey = (key) => key.replace(/\./g, "_DOT_");
 const decodeKey = (key) => key.replace(/_DOT_/g, ".");
 
-export default function CourseList({ course, currentCars }) {
+const stateColors = {
+    "Chưa bắt đầu": "bg-gray-300 text-gray-800",
+    "Đang thực hiện": "bg-yellow-300 text-yellow-800",
+    "Tiếp tục": "bg-blue-300 text-blue-800",
+    "Đã hoàn thành": "bg-green-300 text-green-800",
+};
+
+export default function CourseList({ course, currentCars, setCourseFocus, currentCourseFocusId, setCurrentCourseFocusId, fullCarMode, setFullCarMode }) {
     const { id, state, start_date, end_date } = course;
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    //const [isModalOpen, setIsModalOpen] = useState(false);
     const columnRef = useRef(null);
     const [colState, setColState] = useState(idle);
     const [carSlot, setCarSlot] = useState(null);
@@ -53,6 +59,11 @@ export default function CourseList({ course, currentCars }) {
             count += Number(value.number_of_students)
         })
         setCarCount(count)
+    }, [course])
+
+    useEffect(() => {
+        if(currentCourseFocusId === id && !fullCarMode) 
+            setCourseFocus(course)
     }, [course])
 
     const AddCarToCourse = useCallback(
@@ -134,13 +145,19 @@ export default function CourseList({ course, currentCars }) {
         return progress;
     };
 
+    const handleFocus = () => {
+        setFullCarMode(false)
+        setCourseFocus(course)
+        setCurrentCourseFocusId(id)
+    }
+
     return (
         <div
             className={`border-2 rounded-xl w-full cursor-pointer ${colState.type === "is-car-over" ? "border-[#4B0082]" : "border-transparent"}`}
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => handleFocus(course)}
         >
             <div
-                className={`flex flex-col h-full w-full relate border-box  max-h-[100%] pb-[8px] rounded-xl bg-white align-top whitespace-normal scroll-m-[8px]`}
+                className={`flex flex-col h-full w-full relate border-box  max-h-[100%] pb-[8px] rounded-xl bg-white hover:bg-[#DCDDDF] align-top whitespace-normal scroll-m-[8px]`}
                 ref={columnRef}
             >
                 <div className="flex relative justify-around  flex-wrap items-start px-[8px] pt-[8px]">
@@ -148,7 +165,7 @@ export default function CourseList({ course, currentCars }) {
                         <h2 className="block px-[6px] pr-[8px] bg-transparent text-[22px] font-semibold whitespace-normal leading-5">{id}</h2>
                     </div>
                     <div className="inline-block text-base pt-[3px] pr-[8px] relative">
-                        <div className="bg-green-300 text-green-800 px-2 py-1 rounded-full">{state}</div>
+                        <div className={`px-2 py-1 rounded-full ${stateColors[state] || "bg-gray-300 text-gray-800"}`}>{state}</div>
                     </div>
                     {/* <div className="w-[15px] h-[15px] mt-[10px] cursor-pointer">
                         <Pencil className="w-full h-full" />

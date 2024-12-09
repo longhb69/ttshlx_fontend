@@ -88,7 +88,7 @@ export default function EditCarModal(props: EditCarModalProps) {
         <Fragment>
             <Blanket isTinted={true} testId="edit-car-blanket">
                 <div className={`modal-container w-[600px] ${isClosing ? "closing" : ""}`}>
-                    <section className="modal w-full bg-[#FAF7F5]">
+                    <section className="modal pb-4 w-full bg-[#FAF7F5]">
                         <div className="flex relative items-center justify-between px-[1.5rem] pb-[1rem] pt-[1.5rem]">
                             <h1 className="text-[#172B4D] font-semibold">Chỉnh sửa xe</h1>
                             <button onClick={handleClose}>

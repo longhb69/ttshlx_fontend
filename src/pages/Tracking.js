@@ -18,6 +18,8 @@ export default function Tracking() {
     const [currentClass, setCurrentClass] = useState("C");
     const [cars, setCars] = useState([]);
     const [courses, setCourses] = useState([]);
+    const [courseFocus, setCourseFocus] = useState()
+    const [currentCourseFocusId, setCurrentCourseFocusId] = useState("")
     const [notes, setNotes] = useState([]);
     const [coursesName, setCoursesName] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,6 +29,8 @@ export default function Tracking() {
     const [currentNoteId, setCurrentNoteId] = useState("");
     const [tags, setTags] = useState([]);
     const [noteMode, setNoteMode] = useState(false);
+    const [fullCarMode, setFullCarMode] = useState(true)
+    const [fullCarScreen, setFullCarScreen] = useState(92)
     const { gobalCars, setGobalCars, setGobalCourse } = useContext(CarsContext);
 
     const carsCollectionRef = collection(db, "cars");
@@ -55,7 +59,6 @@ export default function Tracking() {
             coursesCollectionRef,
             (querySnapshot) => {
                 setCourses(querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
-                console.log("Something change");
             },
             (error) => {
                 console.error("Error fetching real-time updates:", error);
@@ -150,15 +153,24 @@ export default function Tracking() {
     };
 
     useEffect(() => {
-        console.log(param1);
-    }, [param1]);
+        if(courseFocus) {
+            setFullCarScreen(35)
+        }
+        else {
+            setFullCarScreen(92)
+        }
+    }, [courseFocus])
+
+    useEffect(() => {
+        //console.log(courseFocus);
+    }, [courses]);
 
     return (
         <>
             <div className="flex justify-between pl-8 pr-4 gap-4 py-4 h-full bg-white">
-                <div className="flex flex-col nowrap gap-5 basis-[80%]">
-                    <div className="flex flex-col h-[45%] gap-2 w-full rounded">
-                        <div className="toolbar-sections rounded-lgh-[15%]  w-full bg-[#EFEAE6]">
+                <div className="flex h-full flex-col nowrap gap-5 basis-[80%]">
+                    <div className="flex flex-col overflow-hidden gap-2 w-full h-full rounded ">
+                        <div className="toolbar-sections rounded-lg h-[8%]  w-full bg-[#EFEAE6]">
                             <ToolBar
                                 handleSearch={handleSearch}
                                 coursesName={coursesName}
@@ -168,8 +180,8 @@ export default function Tracking() {
                                 resetNote={resetNote}
                             />
                         </div>
-                        <div className="mt-1 flex w-full h-[85%]">
-                            <div className="w-full overflow-hidden max-h-full overflow-y-scroll custom-scrollbar scrollbar-hidden">
+                        <div className="flex w-full h-[85%] p-2 rounded-md bg-[#EFEAE6]" style={{height: `${fullCarScreen}%`}}>
+                            <div className="w-full max-h-full overflow-y-scroll custom-scrollbar scrollbar-hidden">
                                 <ol className={`h-full min-h-full w-full plate-scroll rounded-md shadow-md`}>
                                     {filterCar.length > 0
                                         ? filterCar.map((car) => {
@@ -195,9 +207,13 @@ export default function Tracking() {
                                 </ol>
                             </div>
                         </div>
-                    </div>
-                    <div className="h-[55%] w-full">
-                        <CourseModal/>
+                        <div className={`${courseFocus? "h-[55%]" : ""} w-full`}>
+                            {courseFocus ? 
+                                <CourseModal course={courseFocus} setCourseFocus={setCourseFocus} setFullCarMode={setFullCarMode}/> 
+                            :
+                                null
+                            }
+                        </div>
                     </div>
                 </div>
                 {/* <div className="border border-1 w-[98%] mx-auto border-gray-300 mt-3.5"></div> */}
@@ -217,7 +233,15 @@ export default function Tracking() {
                                     courses.map((course) => {
                                         return (
                                             <li className="block shirk-0 px-[6px]  whitespace-nowrap">
-                                                <CourseList course={course} currentCars={cars} />
+                                                <CourseList 
+                                                    course={course} 
+                                                    currentCars={cars} 
+                                                    setCourseFocus={setCourseFocus} 
+                                                    currentCourseFocusId={currentCourseFocusId} 
+                                                    setCurrentCourseFocusId={setCurrentCourseFocusId} 
+                                                    fullCarMode={fullCarMode}
+                                                    setFullCarMode={setFullCarMode}
+                                                />
                                             </li>
                                         );
                                     })}

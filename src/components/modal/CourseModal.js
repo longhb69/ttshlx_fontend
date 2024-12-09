@@ -1,12 +1,15 @@
 import Blanket from "@atlaskit/blanket";
-import { X, Plus, Minus } from "lucide-react";
-import {useEffect, useState } from "react";
+import { X, Plus, Minus, Undo2 } from "lucide-react";
+import {useEffect, useRef, useState } from "react";
 import formatFirebaseTimestampV2 from "../../utils/formatFirebaseTimestampV2";
 import formatFirebaseTimestamp from "../../utils/formatFirebaseTimestamp";
-import { getFirestore, doc, increment, getDoc, updateDoc, deleteField } from "firebase/firestore";
+import { getFirestore, doc, increment, getDoc, updateDoc, deleteField, deleteDoc } from "firebase/firestore";
 import Button from "../Button"
 import CarItem from "../tracking/CarItem";
 import Calendar from '@atlaskit/calendar';
+import { useOnClickOutside } from "usehooks-ts";
+import DeleteCourseModal from "./DeleteCourseModal";
+
 
 const decodeKey = (key) => key.replace(/_DOT_/g, ".");
 
@@ -17,21 +20,44 @@ export default function CourseModal(props) {
     const [optionSate, setOptionState] = useState(false);
     const [saveChange, setSaveChange] = useState(false)
     const [updateQueue, setUpdateQueue] = useState({})
-    const [courseState, setCourseState] = useState("props.course.state")
+    const [triggerUndo, setTriggerUndo] = useState(false)
+    const [courseState, setCourseState] = useState(props.course.state)
+    const [editStartDate, setEditStartDate] = useState(false)
+    const [editEndDate, setEditEndDate] = useState(false)
+    const [isDelete, setIsDelete] = useState(false)
+
+    const ref = useRef()
+
+    const handleClickOutside = () => {
+        setEditEndDate(false)
+        setEditStartDate(false)
+    }
+
+    useOnClickOutside(ref, handleClickOutside)
+
     const db = getFirestore();
-    const docRef = doc(db, "courses", "props.course.id");
+    const docRef = doc(db, "courses", props.course.id);
 
     //lister to any update that happen in date, state
     const [stateChange, setStateChange] = useState(false)
 
+    const stateColors = {
+        "Chưa bắt đầu": "bg-gray-300 text-gray-800",
+        "Đang thực hiện": "bg-yellow-300 text-yellow-800",
+        "Tiếp tục": "bg-blue-300 text-blue-800",
+        "Đã hoàn thành": "bg-green-300 text-green-800",
+    };
+
     const handleClose = () => {
-        setIsClosing(true);
-        setSaveChange(false)
-        setUpdateQueue({})
-        setTimeout(() => {
-            props.setTrigger(false);
-            setIsClosing(false);
-        }, 200);
+        // setIsClosing(true);
+        // setSaveChange(false)
+        // setUpdateQueue({})
+        // setTimeout(() => {
+        //     props.setTrigger(false);
+        //     setIsClosing(false);
+        // }, 200);
+        props.setFullCarMode(true)
+        props.setCourseFocus(null)
     };
 
     const handleUpdate = async () => {
@@ -63,7 +89,9 @@ export default function CourseModal(props) {
                     [`cars.${key}`]: deleteField(),
                 });
                 console.log(`Key "${decodeKey(key)}" removed successfully!`);
-                return
+                setUpdateQueue({})
+                setSaveChange(false)
+                continue
             }
             try {
                 const CarDocSnap = await getDoc(CarDocRef)
@@ -96,6 +124,7 @@ export default function CourseModal(props) {
             }
         }
         //clost at the end
+        setUpdateQueue({})
         setSaveChange(false)
     }
 
@@ -213,73 +242,125 @@ export default function CourseModal(props) {
     };
 
     useEffect(() => {
+        setCourseState(props.course.state)
+    }, [props.course.state])
+
+    const handleReverse = () => {
+        //setSaveChange(false)
+        setCourseState(props.course.state)
+        setUpdateQueue({})
+        setTriggerUndo(true)
+        setSaveChange(false)
+    }
+
+    useEffect(() => {
         //console.log("Update Queue", updateQueue)
     }, [updateQueue])
 
+    useEffect(() => {
+        handleReverse()
+    }, [props.course])
 
+    const deleteCourse = async () => {
+        try {
+            // const docSnap = await getDoc(docRef);
+            // if (docSnap.exists()) {
+            //     const cars = docSnap.data().cars || [];
+            //     for(const [key, value] of Object.entries(cars)) {
+                    
+            //     }
+            // }
+            await deleteDoc(docRef)
+            handleClose()
+        } catch (error) {
+            console.error('Error deleting course: ', error);
+        }
+    }
 
     return (
         <>
-            <div className={`relative w-full cursor-default h-full ${isClosing ? "closing" : ""}`}>
-                <section className="w-full h-full modal bg-[#EFEAE6]">
-                    <div className="flex relative items-center justify-between px-[1.5rem] pb-[1rem] pt-[1.5rem]">
+            <div className={`relative w-full cursor-default rounded-lg h-full ${isClosing ? "closing" : ""}`}>
+                <section className="w-full h-full pb-4 modal rounded-lg bg-[#EFEAE6]">
+                    <div className="flex h-[20%] relative items-center justify-between px-3 pt-3">
                         <div className="flex justify-between w-full">
                             <div>
                                 <div className="flex border-box justify-start">
-                                    <h1 className="text-[#172B4D] text-[25px] font-semibold">{"props.course.id"}</h1>
+                                    <h1 className="text-[#172B4D] text-xl font-semibold">{props.course.id}</h1>
                                 </div>
-                                <div className="flex gap-5">
+                                <div ref={ref} className="flex gap-5">
                                     <div className="cursor-pointer relative">
                                         <span className="text-sm">Từ Ngày: </span>
-                                        {/* {formatFirebaseTimestamp(props.course.start_date.seconds)} */}
+                                        <span onClick={() => setEditStartDate(!editStartDate)}>{formatFirebaseTimestamp(props.course.start_date.seconds)}</span>
                                         <div className="absolute z-[10] bg-white">
-                                            {/*<Calendar locale="vi-VN" defaultSelected={formatFirebaseTimestampV2(props.course.start_date)}/>*/}
+                                            {editStartDate ?
+                                                <Calendar locale="vi-VN" defaultSelected={formatFirebaseTimestampV2(props.course.start_date)}/>
+                                            : null}
                                         </div>
                                     </div>
-                                    <div>
+                                    <div className="cursor-pointer relative">
                                         <span className="text-sm">Đến Ngày: </span>
-                                        {/* {formatFirebaseTimestamp(props.course.end_date.seconds)} */}
+                                        <span onClick={() => setEditEndDate(!editEndDate)}>{formatFirebaseTimestamp(props.course.end_date.seconds)}</span>
+                                        <div className="absolute z-[10] bg-white">
+                                            {editEndDate ?
+                                                <Calendar locale="vi-VN" defaultSelected={formatFirebaseTimestampV2(props.course.end_date)}/>
+                                            : null}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                             {saveChange ?
-                                <div className="flex items-center justify-center">
-                                    <Button onClick={() => handleUpdate()}>
+                                <div className="flex gap-2 items-center justify-center">
+                                    <Button className="text-sm" onClick={() => handleUpdate()}>
                                         Lưu thay đổi
                                     </Button>
+                                    <div 
+                                        className="flex items-center p-2 hover:bg-[#111111]/[.1] rounded cursor-pointer"
+                                        onClick={() => handleReverse()}
+                                    >
+                                        <Undo2/>
+                                    </div>
                                 </div> 
                             : null}
                             <div>
-                                <Button>
+                                {/* <Button>
                                     Thêm xe
-                                </Button>
+                                </Button> */}
                             </div>
                             <div className="inline-block text-base pt-[3px] pr-[8px] relative" onClick={() => setOptionState(!optionSate)}>
-                                <div className="bg-green-300 text-green-800 px-2 py-1 cursor-pointer rounded-full select-none">
+                                <div className={`px-2 py-1 min-w-[120px] text-center cursor-pointer rounded-full select-none ${stateColors[courseState] || "bg-gray-300 text-gray-800"}`}>
                                     {courseState}
                                 </div>
                                 {optionSate ? (
-                                    <div className="absolute select-none bg-white border text-sm rounded z-[100] shadow-lg p-2 w-[140px] option-container">
-                                        <div className="hover:bg-[#111111]/[.1] p-2 rounded flex items-center" onClick={() => handleSelectState("Chưa bắt đầu")}>
+                                    <div className="absolute flex flex-col gap-1 select-none bg-white border text-sm rounded z-[100] shadow-lg p-2 w-[140px] option-container">
+                                        <div
+                                            className={`cursor-pointer rounded-md p-2 flex items-center bg-gray-200`}
+                                            onClick={() => handleSelectState("Chưa bắt đầu")}
+                                        >
                                             <span className="font-semibold">Chưa bắt đầu</span>
                                         </div>
-                                        <div className="hover:bg-[#111111]/[.1] p-2 rounded flex items-center" onClick={() => handleSelectState("Đang thực hiện")}>
-                                            <div className="flex justify-start">
-                                                <span className="text-start font-semibold">Đang thực hiện</span>
-                                            </div>
+                                        <div
+                                            className={`cursor-pointer rounded-md p-2 flex items-center bg-yellow-200`}
+                                            onClick={() => handleSelectState("Đang thực hiện")}
+                                        >
+                                            <span className="font-semibold">Đang thực hiện</span>
                                         </div>
-                                        <div className="hover:bg-[#111111]/[.1] p-2 rounded flex items-center" onClick={() => handleSelectState("Tiếp tục")}>
-                                            <div className="flex justify-start">
-                                                <span className="text-start font-semibold">Tiếp tục</span>
-                                            </div>
+                                        <div
+                                            className={`cursor-pointer rounded-md p-2 flex items-center bg-blue-200`}
+                                            onClick={() => handleSelectState("Tiếp tục")}
+                                        >
+                                            <span className="font-semibold">Tiếp tục</span>
                                         </div>
-                                        <div className="hover:bg-[#111111]/[.1] p-2 rounded flex items-center" onClick={() => handleSelectState("Đã hoàn thành")}>
-                                            <div className="flex justify-start">
-                                                <span className="text-start font-semibold">Đã hoàn thành</span>
-                                            </div>
+                                        <div
+                                            className={`cursor-pointer rounded-md p-2 flex items-center bg-green-200`}
+                                            onClick={() => handleSelectState("Đã hoàn thành")}
+                                        >
+                                            <span className="font-semibold">Đã hoàn thành</span>
                                         </div>
                                     </div>
                                 ) : null}
+                            </div>
+                            <div className="inline-block text-base pt-[3px] pr-[8px] relative">
+                                <Button variant="danger" className="rounded text-white text-sm cursor-pointer" onClick={() => setIsDelete(true)}>Xoá khoá học</Button>
                             </div>
                             <div className="flex border-box justify-end">
                                 <button
@@ -293,10 +374,10 @@ export default function CourseModal(props) {
                             </div>
                         </div>
                     </div>
-                    <div className="p-2 h-full">
-                        <div className="max-h-[80%] h-full overflow-y-scroll">
+                    <div className="px-2 pt-2 h-[80%]">
+                        <div className="h-full overflow-y-scroll">
                             <table className="min-w-full border-collapse bg-white shadow-md rounded-lg relative text-sm">
-                                <thead className="bg-[#002933] text-white uppercase sticky top-0">
+                                <thead className="bg-[#002933] text-white text-xs uppercase sticky top-0">
                                     <tr>
                                         <th className="border px-2 py-1 text-left">Biển số</th>
                                         <th className="border px-2 py-1 text-center">Thầy giáo</th>
@@ -305,7 +386,7 @@ export default function CourseModal(props) {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {/* {props.course.cars &&
+                                    {props.course.cars &&
                                         Object.entries(props.course.cars)
                                             .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
                                             .map(([key, value]) => (
@@ -318,13 +399,16 @@ export default function CourseModal(props) {
                                                     saveChange={saveChange}
                                                     setSaveChange={setSaveChange}
                                                     setUpdateQueue={setUpdateQueue}
+                                                    triggerUndo={triggerUndo}
+                                                    setTriggerUndo={setTriggerUndo}
                                                 />
-                                            ))} */}
+                                            ))}
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </section>
+                <DeleteCourseModal trigger={isDelete} setTrigger={setIsDelete} course={props.course} deleteCourse={deleteCourse}/>
             </div>
         </>
     ) 
