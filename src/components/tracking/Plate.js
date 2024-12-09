@@ -133,7 +133,7 @@ const PlatePrimitive = ({ car }) => {
     );
 };
 
-export default function Plate({ car, noteMode = false, currentNoteId }) {
+export default function Plate({ car, noteMode = false, currentNoteId, deleteFromNote }) {
     const ref = useRef(null);
     const dragHandleRef = useRef(null);
     const [state, setState] = useState(idleState);
@@ -175,25 +175,23 @@ export default function Plate({ car, noteMode = false, currentNoteId }) {
         );
     }, [car]);
 
-    const DeleteFromNote = async () => {
-        setIsDeleting(true);
-        const docRef = doc(db, "notes", currentNoteId);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-            console.log(docSnap.data());
-            const updateCars = docSnap.data().cars.filter((c) => c !== car.plate);
-            await updateDoc(docRef, {
-                cars: updateCars,
-            });
-            setIsVisible(false);
-        }
-    };
-
-    useEffect(() => {
-        console.log(noteMode);
-    }, []);
 
     if (!isVisible) return null;
+
+    // const DeleteFromNote = async () => {
+    //     setIsDeleting(true);
+    //     const docRef = doc(db, "notes", currentNoteId);
+    //     const docSnap = await getDoc(docRef);
+    //     if (docSnap.exists()) {
+    //         const updateCars = docSnap.data().cars.filter((c) => c !== car.plate);
+    //         await updateDoc(docRef, {
+    //             cars: updateCars,
+    //         });
+    //         setIsVisible(false);
+            
+    //     }
+    // };
+
 
     return (
         <li className={`flex w-full cursor-auto ${state.type === "dragging" ? "opacity-40" : ""} ${isDeleting ? "fade-out" : ""}`}>
@@ -201,7 +199,7 @@ export default function Plate({ car, noteMode = false, currentNoteId }) {
                 <div
                     ref={deleteHoverRef}
                     className="flex items-center justify-center bg-red-400 mt-2 p-1 mr-1 cursor-pointer rounded relative hover:bg-red-500"
-                    onClick={() => DeleteFromNote()}
+                    onClick={() => deleteFromNote(car.plate)}
                 >
                     <span className="flex items-center w-[11px] h-[15px]">
                         <X />

@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Plus } from "lucide-react";
 import { db } from "../config/firebase";
-import { getDocs, collection, getDoc, doc, onSnapshot, query, where, orderBy } from "firebase/firestore";
+import { getDocs, collection, getDoc, doc, onSnapshot, query, where,updateDoc, orderBy } from "firebase/firestore";
 import Plate from "../components/tracking/Plate";
 import CourseList from "../components/tracking/CourseList";
 import ToolBar from "../components/tracking/ToolBar.js";
@@ -31,6 +31,7 @@ export default function Tracking() {
     const [noteMode, setNoteMode] = useState(false);
     const [fullCarMode, setFullCarMode] = useState(true)
     const [fullCarScreen, setFullCarScreen] = useState(92)
+    const [emptyResult, setEmptyResult] = useState(false)
     const { gobalCars, setGobalCars, setGobalCourse } = useContext(CarsContext);
 
     const carsCollectionRef = collection(db, "cars");
@@ -140,6 +141,7 @@ export default function Tracking() {
         const filteredResults = cars.filter((car) => {
             return filteredNote[0].cars.includes(car.plate);
         });
+        console.log(filteredResults)
         if (filteredResults.length === 0) {
             setFilterCar([]);
             setNoteMode(false);
@@ -148,8 +150,21 @@ export default function Tracking() {
             setNoteMode(true);
         }
     };
+
     const resetNote = () => {
         setCurrentNoteId("");
+    };
+
+    const deleteFromNote = async (plate) => {
+        const docRef = doc(db, "notes", currentNoteId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            const updateCars = docSnap.data().cars.filter((c) => c !== plate);
+            await updateDoc(docRef, {
+                cars: updateCars,
+            });  
+            setFilterCar(filterCar.filter(car=> car.plate !== plate))          
+        }
     };
 
     useEffect(() => {
@@ -165,12 +180,40 @@ export default function Tracking() {
         //console.log(courseFocus);
     }, [courses]);
 
+    const RenderCarList = ({ filterCar, cars, noteMode, currentNoteId }) => {
+        if(filterCar.length > 0) {
+            return filterCar.map((car) => (
+                <Plate
+                    key={car.id}
+                    car={car}
+                    noteMode={noteMode}
+                    currentNoteId={currentNoteId}
+                    deleteFromNote={deleteFromNote}
+                    className="border rounded-lg p-2 shadow-md hover:shadow-lg transition-shadow duration-200"
+                />
+            ));
+        } 
+        else if(filterCar.length === 0 && currentNoteId !== "") {
+            return <p className="text-gray-500 text-center mt-4">Không có xe nào khớp với kết quả tìm kiếm.</p>;
+        }
+        if (cars.length > 0) {
+            return cars.map((car) => (
+                <Plate
+                    key={car.id}
+                    car={car}
+                    noteMode={false}
+                    className="border rounded-lg p-2 shadow-md hover:shadow-lg transition-shadow duration-200 mr-2"
+                />
+            ));
+        }
+    }
+
     return (
         <>
             <div className="flex justify-between pl-8 pr-4 gap-4 py-4 h-full bg-white">
                 <div className="flex h-full flex-col nowrap gap-5 basis-[80%]">
                     <div className="flex flex-col overflow-hidden gap-2 w-full h-full rounded ">
-                        <div className="toolbar-sections rounded-lg h-[8%]  w-full bg-[#EFEAE6]">
+                        <div className="rounded-lg h-[5%] min-h-[5%] w-full bg-[#EFEAE6]">
                             <ToolBar
                                 handleSearch={handleSearch}
                                 coursesName={coursesName}
@@ -183,27 +226,12 @@ export default function Tracking() {
                         <div className="flex w-full h-[85%] p-2 rounded-md bg-[#EFEAE6]" style={{height: `${fullCarScreen}%`}}>
                             <div className="w-full max-h-full overflow-y-scroll custom-scrollbar scrollbar-hidden">
                                 <ol className={`h-full min-h-full w-full plate-scroll rounded-md shadow-md`}>
-                                    {filterCar.length > 0
-                                        ? filterCar.map((car) => {
-                                            return (
-                                                <Plate
-                                                    car={car}
-                                                    noteMode={noteMode}
-                                                    currentNoteId={currentNoteId}
-                                                    className="border rounded-lg p-2 shadow-md hover:shadow-lg transition-shadow duration-200"
-                                                />
-                                            );
-                                        })
-                                        : cars.length > 0 &&
-                                        cars.map((car) => {
-                                            return (
-                                                <Plate
-                                                    car={car}
-                                                    noteMode={false}
-                                                    className="border rounded-lg p-2 shadow-md hover:shadow-lg transition-shadow duration-200 mr-2"
-                                                />
-                                            );
-                                    })}
+                                    <RenderCarList 
+                                        filterCar={filterCar}
+                                        cars={cars}
+                                        noteMode={noteMode}
+                                        currentNoteId={currentNoteId}
+                                    />
                                 </ol>
                             </div>
                         </div>
