@@ -21,7 +21,7 @@ const colors = ["#EF9995", "#A4CBB4", "#DC8850", "#D97706"];
 const idleState = { type: "idle" };
 const draggingState = { type: "dragging" };
 
-const PlatePrimitive = ({ car }) => {
+const PlatePrimitive = ({ car, courseColorMap }) => {
     const { plate, expiry_date, owner_name, car_class, available_slot, current_slot, courses } = car;
     const [isOption, setIsOption] = useState(false);
     const optionRef = useRef(null);
@@ -100,7 +100,7 @@ const PlatePrimitive = ({ car }) => {
                                         key={index}
                                         text={`${course.name}`}
                                         number_of_students={course.number_of_students}
-                                        background={colors[index % colors.length]}
+                                        background={courseColorMap[course.name]}
                                     />
                                 );
                             })}
@@ -133,7 +133,7 @@ const PlatePrimitive = ({ car }) => {
     );
 };
 
-export default function Plate({ car, noteMode = false, currentNoteId, deleteFromNote }) {
+export default function Plate({ car, noteMode = false, currentNoteId, deleteFromNote , courseColorMap}) {
     const ref = useRef(null);
     const dragHandleRef = useRef(null);
     const [state, setState] = useState(idleState);
@@ -209,7 +209,7 @@ export default function Plate({ car, noteMode = false, currentNoteId, deleteFrom
             ) : null}
             <div className="border mt-1.5 gap-2 flex items-center transition-colors duration-75 hover:bg-[#111111]/[.1]  border-[#2E282A] text-[#282425] rounded-lg shadow p-1 w-full">
                 <DragHandleButton ref={mergeRefs([dragHandleRef, ref])} />
-                <PlatePrimitive car={car} />
+                <PlatePrimitive car={car} courseColorMap={courseColorMap}/>
                 {state.type === "preview" && createPortal(<PlatePreview rect={state.rect} car={car} />, state.container)}
             </div>
         </li>

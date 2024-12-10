@@ -93,11 +93,11 @@ export default function CarItem({ plate, value, cars, decreaseStudent, increaseS
 
     return (
         <tr className="hover:bg-[#f0f0f0] transition-colors duration-200" key={plate}>
-            <td className="border px-2 text-gray-800 text-sm" style={{ width: "20%" }}>
+            <td className="border px-2 text-gray-800 text-[1rem] font-semibold" style={{ width: "20%"}}>
                 {decodeKey(plate)}
             </td>
             {joinCar ? 
-                <td className="border text-gray-800 text-sm text-center" style={{ width: "20%" }}>
+                <td className="border text-gray-800 text-sm font-semibold text-center" style={{ width: "20%" }}>
                     {joinCar.owner_name}
                 </td>
             : <td className="border  text-gray-800 text-center" style={{ width: "20%" }}></td>}

@@ -69,11 +69,11 @@ export default function ToolBar({ handleSearch, coursesName, filterClass, tags, 
                             </span>
                         </Button>
                         {isOpen && (
-                            <div className="absolute bg-[#E4D8B4] border-[#282425] border top-full rounded shadow-lg z-[2] cursor-pointer">
-                                <ul>
+                            <div className="absolute bg-white top-full rounded shadow-lg z-[2] cursor-pointer">
+                                <ul className="p-2">
                                     {coursesName.map((name) => {
                                         return (
-                                            <li className="p-2 hover:bg-[#111111]/[.2]" onClick={() => handleSelectOption(name)}>
+                                            <li className="p-2 rounded hover:bg-[#111111]/[.2]" onClick={() => handleSelectOption(name)}>
                                                 {name}
                                             </li>
                                         );

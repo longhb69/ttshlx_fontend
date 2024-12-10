@@ -138,7 +138,7 @@ body,
 }
 
 .force-bar-color span {
-    background-color: #291334 !important;
+    background-color: #00D7C0 !important;
 }
 
 .force-bar-complete span {
@@ -166,3 +166,12 @@ body,
     overflow-x: visible;
     overflow-y: scroll;
 }
+
+.transition-height {
+    transition: height 0.1s ease-in-out;
+}
+
+
+.transition-width {
+    transition: width 0.5s ease;
+  }

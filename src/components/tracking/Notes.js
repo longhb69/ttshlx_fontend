@@ -36,7 +36,7 @@ export default function Notes({ notes, filterByNote, currentNoteId, currentClass
                 cars: [],
                 content: textareaValue,
                 createdAt: serverTimestamp(),
-                class: currentClass,
+                note_class: currentClass,
             });
             console.log("Note added to Firestore");
         } catch (error) {

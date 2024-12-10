@@ -157,21 +157,21 @@ export default function CourseList({ course, currentCars, setCourseFocus, curren
             onClick={() => handleFocus(course)}
         >
             <div
-                className={`flex flex-col h-full w-full relate border-box  max-h-[100%] pb-[8px] rounded-xl bg-white hover:bg-[#DCDDDF] align-top whitespace-normal scroll-m-[8px]`}
+                className={`flex flex-col h-full w-full relate border-box  max-h-[100%] rounded-xl bg-white hover:bg-[#DCDDDF] align-top whitespace-normal scroll-m-[8px]`}
                 ref={columnRef}
             >
-                <div className="flex relative justify-around  flex-wrap items-start px-[8px] pt-[8px]">
-                    <div className="relative  flex items-start grow pt-[8px] px-[8px] shrink min-h-[35px] text-[#172b4d]">
-                        <h2 className="block px-[6px] pr-[8px] bg-transparent text-[22px] font-semibold whitespace-normal leading-5">{id}</h2>
+                <div className="flex relative justify-around  flex-wrap items-start pt-[8px]">
+                    <div className="relative  flex items-start grow pt-[7px] px-[8px] shrink min-h-[35px] text-[#172b4d]">
+                        <h2 className="block px-[6px] pr-[8px] bg-transparent text-xl font-semibold whitespace-normal leading-5">{id}</h2>
                     </div>
-                    <div className="inline-block text-base pt-[3px] pr-[8px] relative">
+                    <div className="inline-block text-sm font-semibold pt-[3px] pr-[8px] relative">
                         <div className={`px-2 py-1 rounded-full ${stateColors[state] || "bg-gray-300 text-gray-800"}`}>{state}</div>
                     </div>
                     {/* <div className="w-[15px] h-[15px] mt-[10px] cursor-pointer">
                         <Pencil className="w-full h-full" />
                     </div> */}
                     <div className="mx-auto mt-3 flex flex-col items-center gap-2">
-                        <div className="flex gap-2">
+                        <div className="flex items-center font-semibold gap-2 text-sm">
                             <div>{formatFirebaseTimestamp(start_date.seconds)}</div>
                             <div>
                                 <MoveRight />
@@ -182,14 +182,14 @@ export default function CourseList({ course, currentCars, setCourseFocus, curren
                             <ProgressBar value={calculateProcess()} />
                         </div>
                     </div>
-                    <div className="mt-3 mb-3 w-full text-base flex justify-evenly items-center gap-2">
+                    <div className="mt-3 mb-3 w-full text-sm flex justify-evenly items-center gap-2">
                         <div>
                             <span>Số xe: </span>
-                            <span>{Object.keys(course.cars).length}</span>
+                            <span className="font-semibold">{Object.keys(course.cars).length}</span>
                         </div>
                         <div>
                             <span>Số học viên: </span>
-                            <span>{carCount}</span>
+                            <span className="font-semibold">{carCount}</span>
                         </div>
                     </div>
                     {/* <div className="w-full flex items-center justify-center mt-2 p-[8px]">

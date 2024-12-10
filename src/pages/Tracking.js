@@ -23,7 +23,10 @@ export default function Tracking() {
     const [notes, setNotes] = useState([]);
     const [coursesName, setCoursesName] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    //seacrh and filter result
     const [filterCar, setFilterCar] = useState([]);
+    const [searchResult, setSearchResult] = useState([])
+
     const [currentTags, setCurrentTags] = useState("");
     const [isCourseModal, setIsCourseModal] = useState(false);
     const [currentNoteId, setCurrentNoteId] = useState("");
@@ -32,7 +35,10 @@ export default function Tracking() {
     const [fullCarMode, setFullCarMode] = useState(true)
     const [fullCarScreen, setFullCarScreen] = useState(92)
     const [emptyResult, setEmptyResult] = useState(false)
+    const [courseColorMap, setCourseColorMap] = useState({});
     const { gobalCars, setGobalCars, setGobalCourse } = useContext(CarsContext);
+    const courseColors = ["#EF9995", "#A4CBB4", "#DC8850", "#D97706", "#D4619D", "#26B8A6"];
+
 
     const carsCollectionRef = collection(db, "cars");
     const coursesCollectionRef = collection(db, "courses");
@@ -56,8 +62,9 @@ export default function Tracking() {
     }, [param1]);
 
     useEffect(() => {
+        const orderedQuery = query(coursesCollectionRef, where("course_class", "==", param1))
         const unsubscribe = onSnapshot(
-            coursesCollectionRef,
+            orderedQuery,
             (querySnapshot) => {
                 setCourses(querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
             },
@@ -67,13 +74,24 @@ export default function Tracking() {
         );
 
         return () => unsubscribe();
-    }, []);
+    }, [param1]);
 
     useEffect(() => {
+        const orderedQuery = query(
+            notesCollectionRef, 
+            where("note_class", "==", param1),
+        )
         const unsubscribe = onSnapshot(
-            notesCollectionRef,
+            orderedQuery,
             (querySnapshot) => {
-                setNotes(querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+                console.log("note update")
+                setNotes(querySnapshot.docs
+                                    .map((doc) => ({ id: doc.id, ...doc.data() }))
+                                    .sort((a,b) => {
+                                        return a.createdAt - b.createdAt
+                                    })
+                                    //.reverse()
+                        );
             },
             (error) => {
                 console.error("Error fetching real-time updates in notes:", error);
@@ -81,7 +99,7 @@ export default function Tracking() {
         );
 
         return () => unsubscribe();
-    }, []);
+    }, [param1]);
 
     useEffect(() => {
         setCoursesName(
@@ -89,20 +107,41 @@ export default function Tracking() {
                 return course.id;
             })
         );
+        const colorMapping = {};
+        courses.forEach((course, index) => {
+            colorMapping[course.id] = courseColors[index % courseColors.length];
+        });
+        setCourseColorMap(colorMapping);
         setGobalCourse(courses)
     }, [courses]);
 
     const handleSearch = async (searchTerm) => {
-        setNoteMode(false);
+        //setNoteMode(false);
         if (searchTerm.trim() === "") {
-            setFilterCar([]);
+            setSearchResult([]);
             return;
         }
-        const filteredResults = cars.filter((car) => {
-            return car.plate.includes(searchTerm) || car.owner_name.toLowerCase().includes(searchTerm.toLowerCase());
-        });
 
-        setFilterCar(filteredResults);
+        let filteredResults = []
+        if(filterCar.length > 0) {
+            filteredResults = filterCar.filter((car) => {
+                return car.plate.includes(searchTerm) || car.owner_name.toLowerCase().includes(searchTerm.toLowerCase());
+            });
+        } 
+        else
+        {
+            filteredResults = cars.filter((car) => {
+                return car.plate.includes(searchTerm) || car.owner_name.toLowerCase().includes(searchTerm.toLowerCase());
+            });
+        }
+
+        //if keyword don't match nay car set result to not found
+        if(filteredResults.length === 0) 
+            setEmptyResult(true)
+        else 
+            setEmptyResult(false)
+
+        setSearchResult(filteredResults);
     };
 
     const filterClass = (tags) => {
@@ -115,7 +154,6 @@ export default function Tracking() {
             const filter = cars.filter((car) => {
                 if (car.courses) {
                     return car.courses.some((course) => {
-                        if (course.name === tag) console.log("Found", course.name);
                         return course.name === tag;
                     });
                 }
@@ -124,6 +162,16 @@ export default function Tracking() {
             filteredResults.push(...filter);
         });
 
+        if(filteredResults.length === 0 && tags.length !== 0) {
+            setEmptyResult(true)
+        } else {
+            setEmptyResult(false)
+        }
+
+        //last check to make sure if tags is empty then there is no empty result
+        if(tags.length === 0) {
+            setEmptyResult(false)
+        }
         setCurrentTags(tags);
         setFilterCar(filteredResults);
     };
@@ -152,6 +200,7 @@ export default function Tracking() {
     };
 
     const resetNote = () => {
+        setNoteMode(false)
         setCurrentNoteId("");
     };
 
@@ -181,6 +230,22 @@ export default function Tracking() {
     }, [courses]);
 
     const RenderCarList = ({ filterCar, cars, noteMode, currentNoteId }) => {
+        if(searchResult.length > 0) {
+            return searchResult.map((car) => (
+                        <Plate
+                            key={car.id}
+                            car={car}
+                            noteMode={noteMode}
+                            currentNoteId={currentNoteId}
+                            deleteFromNote={deleteFromNote}
+                            courseColorMap={courseColorMap}
+                            className="border rounded-lg p-2 shadow-md hover:shadow-lg transition-shadow duration-200"
+                        />
+                    ));
+        } 
+        else if(emptyResult) {
+            return <p className="text-gray-500 text-center mt-4">Không có xe nào khớp với kết quả tìm kiếm.</p>;
+        }
         if(filterCar.length > 0) {
             return filterCar.map((car) => (
                 <Plate
@@ -189,19 +254,21 @@ export default function Tracking() {
                     noteMode={noteMode}
                     currentNoteId={currentNoteId}
                     deleteFromNote={deleteFromNote}
+                    courseColorMap={courseColorMap}
                     className="border rounded-lg p-2 shadow-md hover:shadow-lg transition-shadow duration-200"
                 />
             ));
         } 
-        else if(filterCar.length === 0 && currentNoteId !== "") {
-            return <p className="text-gray-500 text-center mt-4">Không có xe nào khớp với kết quả tìm kiếm.</p>;
-        }
+        // else if(filterCar.length === 0 && (currentNoteId !== "" || emptyResult)) {
+        //     return <p className="text-gray-500 text-center mt-4">Không có xe nào khớp với kết quả tìm kiếm.</p>;
+        // }
         if (cars.length > 0) {
             return cars.map((car) => (
                 <Plate
                     key={car.id}
                     car={car}
                     noteMode={false}
+                    courseColorMap={courseColorMap}
                     className="border rounded-lg p-2 shadow-md hover:shadow-lg transition-shadow duration-200 mr-2"
                 />
             ));
@@ -213,7 +280,7 @@ export default function Tracking() {
             <div className="flex justify-between pl-8 pr-4 gap-4 py-4 h-full bg-white">
                 <div className="flex h-full flex-col nowrap gap-5 basis-[80%]">
                     <div className="flex flex-col overflow-hidden gap-2 w-full h-full rounded ">
-                        <div className="rounded-lg h-[5%] min-h-[5%] w-full bg-[#EFEAE6]">
+                        <div className="rounded-lg h-[7%] min-h-[7%] w-full bg-[#EFEAE6]">
                             <ToolBar
                                 handleSearch={handleSearch}
                                 coursesName={coursesName}
@@ -223,7 +290,7 @@ export default function Tracking() {
                                 resetNote={resetNote}
                             />
                         </div>
-                        <div className="flex w-full h-[85%] p-2 rounded-md bg-[#EFEAE6]" style={{height: `${fullCarScreen}%`}}>
+                        <div className="flex w-full h-[85%] shadow transition-height p-2 rounded-md bg-[#EFEAE6]" style={{height: `${fullCarScreen}%`}}>
                             <div className="w-full max-h-full overflow-y-scroll custom-scrollbar scrollbar-hidden">
                                 <ol className={`h-full min-h-full w-full plate-scroll rounded-md shadow-md`}>
                                     <RenderCarList 
@@ -231,11 +298,12 @@ export default function Tracking() {
                                         cars={cars}
                                         noteMode={noteMode}
                                         currentNoteId={currentNoteId}
+                                        searchResult={searchResult}
                                     />
                                 </ol>
                             </div>
                         </div>
-                        <div className={`${courseFocus? "h-[55%]" : ""} w-full`}>
+                        <div className={`transition-height rounded-lg ${courseFocus? "h-[55%]" : ""} w-full`}>
                             {courseFocus ? 
                                 <CourseModal course={courseFocus} setCourseFocus={setCourseFocus} setFullCarMode={setFullCarMode}/> 
                             :
@@ -246,7 +314,7 @@ export default function Tracking() {
                 </div>
                 {/* <div className="border border-1 w-[98%] mx-auto border-gray-300 mt-3.5"></div> */}
                 <div className="basis-[20%] flex flex-col gap-4 relative border-box rounded justify-between">
-                    <Notes notes={notes} filterByNote={filterByNote} currentNoteId={currentNoteId} currentClass={currentClass} />
+                    <Notes notes={notes} filterByNote={filterByNote} currentNoteId={currentNoteId} currentClass={param1} />
                     {/* <div className="w-[85%]">
                         <CourseModal/>
                     </div> */}

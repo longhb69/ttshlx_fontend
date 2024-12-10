@@ -1,15 +1,14 @@
 import Blanket from "@atlaskit/blanket";
-import { X, Plus, Minus, Undo2 } from "lucide-react";
+import { X, Plus, Minus, Undo2, Trash2 } from "lucide-react";
 import {useEffect, useRef, useState } from "react";
 import formatFirebaseTimestampV2 from "../../utils/formatFirebaseTimestampV2";
 import formatFirebaseTimestamp from "../../utils/formatFirebaseTimestamp";
-import { getFirestore, doc, increment, getDoc, updateDoc, deleteField, deleteDoc } from "firebase/firestore";
+import { getFirestore, doc, increment, getDoc, updateDoc, deleteField, deleteDoc, Timestamp } from "firebase/firestore";
 import Button from "../Button"
 import CarItem from "../tracking/CarItem";
 import Calendar from '@atlaskit/calendar';
-import { useOnClickOutside } from "usehooks-ts";
+import { useHover, useOnClickOutside } from "usehooks-ts";
 import DeleteCourseModal from "./DeleteCourseModal";
-
 
 const decodeKey = (key) => key.replace(/_DOT_/g, ".");
 
@@ -26,12 +25,16 @@ export default function CourseModal(props) {
     const [editEndDate, setEditEndDate] = useState(false)
     const [isDelete, setIsDelete] = useState(false)
 
+    const deleteHover = useRef()
+    const isDeleteHover = useHover(deleteHover)
     const ref = useRef()
+
 
     const handleClickOutside = () => {
         setEditEndDate(false)
         setEditStartDate(false)
     }
+
 
     useOnClickOutside(ref, handleClickOutside)
 
@@ -253,6 +256,20 @@ export default function CourseModal(props) {
         setSaveChange(false)
     }
 
+    const handleStartDateSelecet = async (date) => {
+        await updateDoc(docRef, {
+            start_date: Timestamp.fromDate(new Date(date.iso))
+        })
+        setEditStartDate(false)
+    }
+
+    const handleEndDateSelecet = async (date) => {
+        await updateDoc(docRef, {
+            end_date: Timestamp.fromDate(new Date(date.iso))
+        })
+        setEditEndDate(false)
+    }
+
     useEffect(() => {
         //console.log("Update Queue", updateQueue)
     }, [updateQueue])
@@ -279,54 +296,59 @@ export default function CourseModal(props) {
 
     return (
         <>
-            <div className={`relative w-full cursor-default rounded-lg h-full ${isClosing ? "closing" : ""}`}>
-                <section className="w-full h-full pb-4 modal rounded-lg bg-[#EFEAE6]">
+            <div className={`relative w-full cursor-default h-full ${isClosing ? "closing" : ""}`}>
+                <section className="w-full h-full pb-4 shadow-md rounded-lg bg-[#E4D8B4] border-[#2E282A] border">
                     <div className="flex h-[20%] relative items-center justify-between px-3 pt-3">
-                        <div className="flex justify-between w-full">
-                            <div>
+                        <div className="flex items-center gap-10 w-full">
+                            <div className="basis-[30%]">
                                 <div className="flex border-box justify-start">
-                                    <h1 className="text-[#172B4D] text-xl font-semibold">{props.course.id}</h1>
+                                    <h1 className="text-[#172B4D] text-2xl font-semibold">{props.course.id}</h1>
                                 </div>
                                 <div ref={ref} className="flex gap-5">
                                     <div className="cursor-pointer relative">
                                         <span className="text-sm">Từ Ngày: </span>
-                                        <span onClick={() => setEditStartDate(!editStartDate)}>{formatFirebaseTimestamp(props.course.start_date.seconds)}</span>
+                                        <span className="text-sm font-semibold" onClick={() => setEditStartDate(!editStartDate)}>{formatFirebaseTimestamp(props.course.start_date.seconds)}</span>
                                         <div className="absolute z-[10] bg-white">
                                             {editStartDate ?
-                                                <Calendar locale="vi-VN" defaultSelected={formatFirebaseTimestampV2(props.course.start_date)}/>
+                                                <Calendar 
+                                                    locale="vi-VN" 
+                                                    defaultSelected={formatFirebaseTimestampV2(props.course.start_date)}
+                                                    onSelect={handleStartDateSelecet}
+                                                />
                                             : null}
                                         </div>
                                     </div>
                                     <div className="cursor-pointer relative">
                                         <span className="text-sm">Đến Ngày: </span>
-                                        <span onClick={() => setEditEndDate(!editEndDate)}>{formatFirebaseTimestamp(props.course.end_date.seconds)}</span>
+                                        <span className="text-sm font-semibold" onClick={() => setEditEndDate(!editEndDate)}>{formatFirebaseTimestamp(props.course.end_date.seconds)}</span>
                                         <div className="absolute z-[10] bg-white">
                                             {editEndDate ?
-                                                <Calendar locale="vi-VN" defaultSelected={formatFirebaseTimestampV2(props.course.end_date)}/>
+                                                <Calendar 
+                                                    locale="vi-VN" 
+                                                    defaultSelected={formatFirebaseTimestampV2(props.course.end_date)}
+                                                    onSelect={handleEndDateSelecet}
+                                                />
                                             : null}
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            {saveChange ?
-                                <div className="flex gap-2 items-center justify-center">
-                                    <Button className="text-sm" onClick={() => handleUpdate()}>
-                                        Lưu thay đổi
-                                    </Button>
-                                    <div 
-                                        className="flex items-center p-2 hover:bg-[#111111]/[.1] rounded cursor-pointer"
-                                        onClick={() => handleReverse()}
-                                    >
-                                        <Undo2/>
-                                    </div>
-                                </div> 
-                            : null}
-                            <div>
-                                {/* <Button>
-                                    Thêm xe
-                                </Button> */}
-                            </div>
-                            <div className="inline-block text-base pt-[3px] pr-[8px] relative" onClick={() => setOptionState(!optionSate)}>
+                            <div className="flex gap-2 basis-[20%] items-center justify-center">
+                                {saveChange ? 
+                                    <>
+                                        <Button className="text-sm" onClick={() => handleUpdate()}>
+                                            Lưu thay đổi
+                                        </Button>
+                                        <div 
+                                            className="flex items-center p-2 hover:bg-[#111111]/[.1] rounded cursor-pointer"
+                                            onClick={() => handleReverse()}
+                                        >
+                                            <Undo2/>
+                                        </div>
+                                    </>
+                                : null }
+                            </div> 
+                            <div className="basis-[15%] inline-block text-base pt-[3px] pr-[8px] relative" onClick={() => setOptionState(!optionSate)}>
                                 <div className={`px-2 py-1 min-w-[120px] text-center cursor-pointer rounded-full select-none ${stateColors[courseState] || "bg-gray-300 text-gray-800"}`}>
                                     {courseState}
                                 </div>
@@ -359,27 +381,35 @@ export default function CourseModal(props) {
                                     </div>
                                 ) : null}
                             </div>
-                            <div className="inline-block text-base pt-[3px] pr-[8px] relative">
-                                <Button variant="danger" className="rounded text-white text-sm cursor-pointer" onClick={() => setIsDelete(true)}>Xoá khoá học</Button>
-                            </div>
-                            <div className="flex border-box justify-end">
-                                <button
-                                    className="w-[2rem] h-[2rem] my-auto transition hover:bg-gray-200 flex justify-center rounded"
-                                    onClick={() => handleClose()}
+                            <div className="basis-[30%] inline-block text-base pt-[3px] pr-[8px] relative">
+                                <div 
+                                    className={`bg-red-500 hover:bg-red-600 max-w-fit flex items-center transition-width justify-center text-slate-200 cursor-pointer rounded px-2 gap-2 h-[30px] ${isDeleteHover ? "w-fit" : ""}`}
+                                    onClick={() => setIsDelete(true)}
+                                    ref={deleteHover}
                                 >
-                                    <span className="self-center">
-                                        <X />
-                                    </span>
-                                </button>
+                                    <Trash2/>
+                                    {isDeleteHover ? <span className="">Xoá khoá học</span> : null}
+                                </div>
+                                {/*<Button variant="danger" className="rounded text-white text-sm cursor-pointer" onClick={() => setIsDelete(true)}>Xoá khoá học</Button>*/}
                             </div>
+                        </div>
+                        <div className="flex border-box justify-end">
+                            <button
+                                className="w-[2rem] h-[2rem] my-auto transition hover:bg-[#111111]/[.2] flex justify-center rounded"
+                                onClick={() => handleClose()}
+                            >
+                                <span className="self-center">
+                                    <X />
+                                </span>
+                            </button>
                         </div>
                     </div>
                     <div className="px-2 pt-2 h-[80%]">
-                        <div className="h-full overflow-y-scroll">
+                        <div className="h-full overflow-y-scroll custom-scrollbar">
                             <table className="min-w-full border-collapse bg-white shadow-md rounded-lg relative text-sm">
                                 <thead className="bg-[#002933] text-white text-xs uppercase sticky top-0">
                                     <tr>
-                                        <th className="border px-2 py-1 text-left">Biển số</th>
+                                        <th className="border px-2 py-2 text-left">Biển số</th>
                                         <th className="border px-2 py-1 text-center">Thầy giáo</th>
                                         <th className="border px-2 py-1 text-center">Học viên</th>
                                         <th className="border px-2 py-1 text-left">Note</th>
@@ -409,6 +439,8 @@ export default function CourseModal(props) {
                     </div>
                 </section>
                 <DeleteCourseModal trigger={isDelete} setTrigger={setIsDelete} course={props.course} deleteCourse={deleteCourse}/>
+                <div className="absolute bg-[#1D7AFC]/[.3] rounded-md border-[3px] transition border-[#1D7AFC] border-dashed flex items-center justify-center top-0 bottom-0 right-0 left-0">
+                </div>
             </div>
         </>
     ) 
