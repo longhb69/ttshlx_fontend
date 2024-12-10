@@ -33,6 +33,12 @@ const sates = [
 	{ label: 'Đã hoàn thành', value: 'Đã hoàn thành' },
 ];
 
+const course = [
+    { label: 'C', value: 'C' },
+	{ label: 'B1+B2', value: 'B1+B2' },
+	{ label: 'B11', value: 'B11' },
+]
+
 const validateField = (value?: string) => {
     if (!value) {
         return "REQUIRED";
@@ -50,6 +56,7 @@ export default function AddCourseModal(props: CarModalProps) {
                 end_date: Timestamp.fromDate(new Date(data.end_date)),
                 start_date: Timestamp.fromDate(new Date(data.start_date)),
                 state: data.states.value,
+                course_class: data.class.value,
                 createdAt: serverTimestamp(),
             });
             handleClose();
@@ -144,6 +151,14 @@ export default function AddCourseModal(props: CarModalProps) {
                                             {({ fieldProps: { id, ...rest }, error }) => (
                                                 <Fragment>
                                                    <Select inputId={id} {...rest} options={sates} />
+                                                   {error && <ErrorMessage>{error}</ErrorMessage>}
+                                                </Fragment>
+                                            )}
+                                        </Field>
+                                        <Field name="class" label="Hạng Xe" defaultValue={""} isRequired>
+                                            {({ fieldProps: { id, ...rest }, error }) => (
+                                                <Fragment>
+                                                   <Select inputId={id} {...rest} options={course} />
                                                    {error && <ErrorMessage>{error}</ErrorMessage>}
                                                 </Fragment>
                                             )}

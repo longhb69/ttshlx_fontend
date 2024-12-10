@@ -9,30 +9,30 @@ export default function SideBar() {
         <div
             className={`${
                 collapse ? "relative w-[16px] z-[5]" : "relative w-[150px]"
-            } h-full min-h-full font-[14px] leading-5 bg-[#67879D]/[0.9]`}
+            } h-full min-h-full transition-width-fast font-[14px] leading-5 bg-[#67879D]/[0.9]`}
         >
-            <div className="absoulte top-0 bottom-0 left-0 transition">
-                <div className={`${collapse ? "hidden" : ""} flex flex-col min-h-full h-full overflow-auto backdrop-blur-[6px]`}>
-                    <div className="flex center min-h-[40px] py-[8px] px-[12px] border-b-1 border-[#dfe1e6]">
-                        <div className="flex-1 mr-[4px] ml-[8px] text-left justify-center">
-                            <Link to="/tracking">Tracking</Link>
-                        </div>
+            <div className="absolute top-0 bottom-0 right-0 left-0 transition">
+                <div className={`${collapse ? "hidden" : ""} flex flex-col items-center min-h-full h-full overflow-auto backdrop-blur-[6px]`}>
+                    <div className="flex justify-center item-center  py-[8px] px-[12px] border-b-1 border-[#dfe1e6]">
                         <button
-                            className="flex h-[32px] w-[32px] items-center justify-center p-[2px] rounded bg-transparent curosr-pointer text-[#172B4D] hover:bg-[#091E4224]"
+                            className="flex h-[32px] w-[32px] items-center justify-center p-[2px] rounded bg-transparent cursor-pointer text-[#172B4D] hover:bg-[#091E4224]"
                             onClick={() => setCollapse(true)}
                         >
                             <div>
-                                <ChevronLeft className="w-[18px] h-[18px]" />
+                                <ChevronLeft className="w-[30px] h-[30px]" />
                             </div>
                         </button>
                     </div>
-                    <div className="w-full h-[50px]"></div>
-                    <div className="w-full h-[50px]">
-                        <Link to="/daotao">dao tao</Link>
-                    </div>
-                    <div className="w-full h-[50px]">
-                        <Link to="/dat">DAT</Link>
-                    </div>
+                    <Link   to="/phanxe/C" className="mr-[4px] w-full hover:bg-[#111111]/[.1] ml-[8px] cursor-pointer text-left justify-center">
+                        <div className="p-2 text-base text-white">
+                            <span className="w-full h-full">Phân xe</span>
+                        </div>
+                    </Link>
+                    <Link to="/dat" className="mr-[4px] w-full hover:bg-[#111111]/[.1] ml-[8px] cursor-pointer text-left justify-center">
+                        <div className="p-2 text-base text-white">
+                             <span>DAT</span>
+                        </div>
+                    </Link>
                 </div>
             </div>
             <div className="absolute top-0 bottom-0 left-0 transition w-[16px]">

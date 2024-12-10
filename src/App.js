@@ -18,7 +18,7 @@ const router = createBrowserRouter([
                 element: <Home />,
             },
             {
-                path: "tracking/:param1",
+                path: "phanxe/:param1",
                 element: <Tracking />,
             },
             {

@@ -15,17 +15,16 @@ import CourseModal from "../components/modal/CourseModal.js";
 
 export default function Tracking() {
     const { param1 } = useParams();
-    const [currentClass, setCurrentClass] = useState("C");
     const [cars, setCars] = useState([]);
     const [courses, setCourses] = useState([]);
     const [courseFocus, setCourseFocus] = useState()
     const [currentCourseFocusId, setCurrentCourseFocusId] = useState("")
     const [notes, setNotes] = useState([]);
     const [coursesName, setCoursesName] = useState([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
     //seacrh and filter result
     const [filterCar, setFilterCar] = useState([]);
     const [searchResult, setSearchResult] = useState([])
+    const [loading, setLoading] = useState(false)
 
     const [currentTags, setCurrentTags] = useState("");
     const [isCourseModal, setIsCourseModal] = useState(false);
@@ -49,7 +48,12 @@ export default function Tracking() {
         const unsubscribe = onSnapshot(
             orderedQuery,
             (querySnapshot) => {
-                const query = querySnapshot.docs.map((doc) => doc.data());
+                const query = querySnapshot.docs
+                                        .map((doc) => doc.data())
+                                        .sort((a,b) => {
+                                            return a.createdAt - b.createdAt
+                                        })
+                                        .reverse();
                 setCars(query);
                 setGobalCars(query);
             },
@@ -66,7 +70,13 @@ export default function Tracking() {
         const unsubscribe = onSnapshot(
             orderedQuery,
             (querySnapshot) => {
-                setCourses(querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+                setCourses(querySnapshot.docs
+                                    .map((doc) => ({ id: doc.id, ...doc.data() }))
+                                    .sort((a,b) => {
+                                        return a.createdAt - b.createdAt
+                                    })    
+                                    .reverse()
+                            );
             },
             (error) => {
                 console.error("Error fetching real-time updates:", error);
@@ -102,6 +112,7 @@ export default function Tracking() {
     }, [param1]);
 
     useEffect(() => {
+        //console.log(courses)
         setCoursesName(
             courses.map((course) => {
                 return course.id;
@@ -305,7 +316,7 @@ export default function Tracking() {
                         </div>
                         <div className={`transition-height rounded-lg ${courseFocus? "h-[55%]" : ""} w-full`}>
                             {courseFocus ? 
-                                <CourseModal course={courseFocus} setCourseFocus={setCourseFocus} setFullCarMode={setFullCarMode}/> 
+                                <CourseModal course={courseFocus} setCourseFocus={setCourseFocus} setFullCarMode={setFullCarMode} loading={loading} setLoading={setLoading}/> 
                             :
                                 null
                             }
@@ -325,7 +336,7 @@ export default function Tracking() {
                         </div>
                        <ScrollableList>
                             <ol className="flex flex-col basis-[95%] pb-2 w-full gap-2">
-                                {courses.length > 1 &&
+                                {courses.length > 0 &&
                                     courses.map((course) => {
                                         return (
                                             <li className="block shirk-0 px-[6px]  whitespace-nowrap">

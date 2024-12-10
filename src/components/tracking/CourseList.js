@@ -9,6 +9,7 @@ import { db } from "../../config/firebase";
 import { arrayUnion } from "firebase/firestore/lite";
 import ProgressBar from "@atlaskit/progress-bar";
 import CourseModal from "../modal/CourseModal";
+import useCarCourse from "../../hooks/useCarCourse";
 
 const idle = { type: "idle" };
 const isCarOver = { type: "is-car-over" };
@@ -30,6 +31,7 @@ export default function CourseList({ course, currentCars, setCourseFocus, curren
     const [colState, setColState] = useState(idle);
     const [carSlot, setCarSlot] = useState(null);
     const [carCount, setCarCount] = useState(0)
+    const { AddCarToCourse, updateCarSlot } = useCarCourse(id);
 
     useEffect(() => {
         if (!columnRef.current) return;
@@ -43,11 +45,7 @@ export default function CourseList({ course, currentCars, setCourseFocus, curren
                 onDrop: ({ source, self }) => {
                     //self.data.id get this columnRef id
                     setColState(idle);
-                    console.log(source.data);
-                    const result = AddCarToCourse(source.data.car.plate).then((response) => {
-                        if(response.status === 200)
-                        updateCarSlot(source.data.car.plate, 1, source.data.car.current_slot);
-                    });
+                    handleAddCar(source.data.car.plate, source.data.car.current_slot)
                 },
             })
         );
@@ -66,72 +64,12 @@ export default function CourseList({ course, currentCars, setCourseFocus, curren
             setCourseFocus(course)
     }, [course])
 
-    const AddCarToCourse = useCallback(
-        async (plate, number_of_students = 1, note = "") => {
-            try {
-                const courseDocRef = doc(db, "courses", id);
-                const carDocRef = doc(db, "cars", plate);
-                const carDocSnap = await getDoc(carDocRef);
-                const courseDocSnap = await getDoc(courseDocRef);
-
-                await updateDoc(courseDocRef, {
-                    [`cars.${encodeKey(plate)}`]: {
-                        note: note,
-                        number_of_students: number_of_students,
-                    },
-                });
-
-                if (!carDocSnap.exists()) {
-                    console.error("Document does not exist!");
-                    return
-                } 
-
-                const carData = carDocSnap.data()
-                const currentCarCourse = carData.courses || [];
-                const newCourseData = { name: id, number_of_students: number_of_students };
-                let updatedCourses;
-                let existingIndex;
-
-                if(currentCarCourse.length === 0) {
-                    console.log("car have no course")
-                    updatedCourses = [newCourseData]
-                }
-                else {
-                    console.log("Car already have some course")
-                    existingIndex = currentCarCourse.findIndex((course) => course.name === id);
-                    console.log("check", existingIndex);
-                    if (existingIndex !== -1) return {status: 400};
-
-                    updatedCourses = [...currentCarCourse, newCourseData]
-                }
-
-                await updateDoc(carDocRef, {
-                    courses: updatedCourses,
-                });
-
-                return {status: 200}
-             
-            } catch (error) {
-                console.error("Error updating document:", error);
-            }
-        },
-        [id]
-    );
-
-    const updateCarSlot = useCallback(async (plate, slot_number, current_slot) => {
-        try {
-            console.log(current_slot, slot_number);
-            const newSlotNumber = (current_slot += slot_number);
-            console.log("new slot", newSlotNumber);
-            const carDocRef = doc(db, "cars", plate);
-            await updateDoc(carDocRef, {
-                current_slot: newSlotNumber,
-            });
-            return newSlotNumber;
-        } catch (error) {
-            console.error("Error updating document:", error);
+     const handleAddCar = async (plate, current_slot) => {
+        const response = await AddCarToCourse(plate);
+        if (response?.status === 200) {
+            updateCarSlot(plate, 1, current_slot);
         }
-    }, []);
+    };
 
     const calculateProcess = () => {
         const currentTimestamp = Date.now();
@@ -165,7 +103,7 @@ export default function CourseList({ course, currentCars, setCourseFocus, curren
                         <h2 className="block px-[6px] pr-[8px] bg-transparent text-xl font-semibold whitespace-normal leading-5">{id}</h2>
                     </div>
                     <div className="inline-block text-sm font-semibold pt-[3px] pr-[8px] relative">
-                        <div className={`px-2 py-1 rounded-full ${stateColors[state] || "bg-gray-300 text-gray-800"}`}>{state}</div>
+                        <div className={`px-4 py-1 rounded-full ${stateColors[state] || "bg-gray-300 text-gray-800"}`}>{state}</div>
                     </div>
                     {/* <div className="w-[15px] h-[15px] mt-[10px] cursor-pointer">
                         <Pencil className="w-full h-full" />

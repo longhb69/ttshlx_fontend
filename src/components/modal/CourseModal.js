@@ -9,10 +9,17 @@ import CarItem from "../tracking/CarItem";
 import Calendar from '@atlaskit/calendar';
 import { useHover, useOnClickOutside } from "usehooks-ts";
 import DeleteCourseModal from "./DeleteCourseModal";
+import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine";
+import useCarCourse from "../../hooks/useCarCourse"
+import loadingAnimation from "../../animation/loadingAnimation.json"
+import Lottie from "lottie-react";
 
 const decodeKey = (key) => key.replace(/_DOT_/g, ".");
-
 const NUMBER_TO_INCREASE = 1;
+
+const idle = { type: "idle" };
+const isCarOver = { type: "is-car-over" };
 
 export default function CourseModal(props) {
     const [isClosing, setIsClosing] = useState(false);
@@ -24,11 +31,12 @@ export default function CourseModal(props) {
     const [editStartDate, setEditStartDate] = useState(false)
     const [editEndDate, setEditEndDate] = useState(false)
     const [isDelete, setIsDelete] = useState(false)
+    const [colState, setColState] = useState(idle);
 
+    const courseRef = useRef()
     const deleteHover = useRef()
     const isDeleteHover = useHover(deleteHover)
     const ref = useRef()
-
 
     const handleClickOutside = () => {
         setEditEndDate(false)
@@ -40,6 +48,7 @@ export default function CourseModal(props) {
 
     const db = getFirestore();
     const docRef = doc(db, "courses", props.course.id);
+    const { AddCarToCourse, updateCarSlot } = useCarCourse(props.course.id);
 
     //lister to any update that happen in date, state
     const [stateChange, setStateChange] = useState(false)
@@ -64,6 +73,7 @@ export default function CourseModal(props) {
     };
 
     const handleUpdate = async () => {
+        props.setLoading(true)
         if(stateChange) {
             await updateDoc(docRef, {
                 state: courseState
@@ -129,6 +139,7 @@ export default function CourseModal(props) {
         //clost at the end
         setUpdateQueue({})
         setSaveChange(false)
+        props.setLoading(false)
     }
 
     const deleteCourseInCar = async (key) => {
@@ -278,6 +289,24 @@ export default function CourseModal(props) {
         handleReverse()
     }, [props.course])
 
+    useEffect(() => {
+        if (!courseRef.current) return;
+
+        return combine(
+            dropTargetForElements({
+                element: courseRef.current,
+                onDragEnter: () => setColState(isCarOver),
+                onDragLeave: () => setColState(idle),
+                onDragStart: () => setColState(isCarOver),
+                onDrop: ({ source, self }) => {
+                    //self.data.id get this columnRef id
+                    setColState(idle);
+                    handleAddCar(source.data.car.plate, source.data.car.current_slot)
+                },
+            })
+        );
+    }, [])  
+    
     const deleteCourse = async () => {
         try {
             // const docSnap = await getDoc(docRef);
@@ -294,9 +323,16 @@ export default function CourseModal(props) {
         }
     }
 
+    const handleAddCar = async (plate, current_slot) => {
+        const response = await AddCarToCourse(plate);
+        if (response?.status === 200) {
+            updateCarSlot(plate, 1, current_slot);
+        }
+    };
+
     return (
         <>
-            <div className={`relative w-full cursor-default h-full ${isClosing ? "closing" : ""}`}>
+            <div ref={courseRef} className={`relative w-full cursor-default h-full ${isClosing ? "closing" : ""}`}>
                 <section className="w-full h-full pb-4 shadow-md rounded-lg bg-[#E4D8B4] border-[#2E282A] border">
                     <div className="flex h-[20%] relative items-center justify-between px-3 pt-3">
                         <div className="flex items-center gap-10 w-full">
@@ -439,8 +475,18 @@ export default function CourseModal(props) {
                     </div>
                 </section>
                 <DeleteCourseModal trigger={isDelete} setTrigger={setIsDelete} course={props.course} deleteCourse={deleteCourse}/>
-                <div className="absolute bg-[#1D7AFC]/[.3] rounded-md border-[3px] transition border-[#1D7AFC] border-dashed flex items-center justify-center top-0 bottom-0 right-0 left-0">
-                </div>
+                {colState.type === "is-car-over" ? 
+                    <div className="absolute bg-[#1D7AFC]/[.3] rounded-md border-[3px] transition border-[#1D7AFC] border-dashed flex items-center justify-center top-0 bottom-0 right-0 left-0">
+                        <Plus className="w-[20%] h-[20%] text-[#4A0FFF]"/>
+                    </div>
+                : null}
+                {props.loading ? 
+                    <div className="absolute bg-[#fff]/[.9] flex items-center justify-center top-0 bottom-0 right-0 left-0">
+                        <div className="w-[20%] h-[20%] flex items-center">
+                            <Lottie animationData={loadingAnimation} speed={3}/>
+                        </div>
+                    </div> 
+                : null}
             </div>
         </>
     ) 

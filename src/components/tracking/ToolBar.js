@@ -50,9 +50,9 @@ export default function ToolBar({ handleSearch, coursesName, filterClass, tags, 
     return (
         <div className="h-full min-h-full flex items-center gap-5">
             <div className="flex h-full w-[15%] items-center justify-center font-semibold rounded-md bg-[#E5E6E6] shadow">
-                <Link to="/tracking/B11" className={`w-[100px] px-1 flex items-center justify-center h-full cursor-pointer rounded-l transition ${param1 === "B11" ? "bg-[#4A0FFF] text-white" : "hover:bg-[#111111]/[.1] text-[#111111]/[.8]"}`}>B11</Link>
-                <Link to="/tracking/B1+B2" className={`w-[100px] px-1 transition flex items-center justify-center h-full cursor-pointer  ${param1 === "B1+B2" ? "bg-[#4A0FFF] text-white" : "hover:bg-[#111111]/[.1] text-[#111111]/[.8]"} `}>B1+B2</Link>
-                <Link to="/tracking/C" className={`w-[100px] px-1 transition flex items-center justify-center h-full cursor-pointer rounded-r ${param1 === "C" ? "bg-[#4A0FFF] text-white" : "hover:bg-[#111111]/[.1] text-[#111111]/[.8]"} `}>C</Link>
+                <Link to="/phanxe/B11" className={`w-[100px] px-1 flex items-center justify-center h-full cursor-pointer rounded-l transition ${param1 === "B11" ? "bg-[#4A0FFF] text-white" : "hover:bg-[#111111]/[.1] text-[#111111]/[.8]"}`}>B11</Link>
+                <Link to="/phanxe/B1+B2" className={`w-[100px] px-1 transition flex items-center justify-center h-full cursor-pointer  ${param1 === "B1+B2" ? "bg-[#4A0FFF] text-white" : "hover:bg-[#111111]/[.1] text-[#111111]/[.8]"} `}>B1+B2</Link>
+                <Link to="/phanxe/C" className={`w-[100px] px-1 transition flex items-center justify-center h-full cursor-pointer rounded-r ${param1 === "C" ? "bg-[#4A0FFF] text-white" : "hover:bg-[#111111]/[.1] text-[#111111]/[.8]"} `}>C</Link>
             </div>
             <div className=" flex items-center p-2 justify-center rounded-md gap-2 " ref={ref}>
                 <input
