@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { db } from "../config/firebase";
 
 const encodeKey = (key) => key.replace(/\./g, "_DOT_");
@@ -12,10 +12,12 @@ const useCarCourse = (courseId) => {
                 const carDocSnap = await getDoc(carDocRef);
                 const courseDocSnap = await getDoc(courseDocRef);
 
+                console.log("update course ", encodeKey(plate), courseId)
                 await updateDoc(courseDocRef, {
                     [`cars.${encodeKey(plate)}`]: {
                         note,
                         number_of_students,
+                        add_date: serverTimestamp()
                     },
                 });
 
@@ -56,9 +58,7 @@ const useCarCourse = (courseId) => {
 
     const updateCarSlot = useCallback(async (plate, slot_number, current_slot) => {
         try {
-            console.log(current_slot, slot_number);
             const newSlotNumber = current_slot + slot_number;
-            console.log("new slot", newSlotNumber);
             const carDocRef = doc(db, "cars", plate);
             await updateDoc(carDocRef, {
                 current_slot: newSlotNumber,

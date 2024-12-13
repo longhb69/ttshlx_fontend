@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import formatFirebaseTimestamp from "../../utils/formatFirebaseTimestamp";
-import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import { draggable } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { setCustomNativeDragPreview } from "@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview";
 import { preserveOffsetOnSource } from "@atlaskit/pragmatic-drag-and-drop/element/preserve-offset-on-source";
 import { DragHandleButton } from "@atlaskit/pragmatic-drag-and-drop-react-accessibility/drag-handle-button";
@@ -15,8 +15,6 @@ import { doc, deleteDoc, updateDoc, getDoc } from "firebase/firestore";
 import { useOnClickOutside } from "usehooks-ts";
 import EditCarModal from "../modal/EditCarModal.tsx";
 import { useHover } from "usehooks-ts";
-
-const colors = ["#EF9995", "#A4CBB4", "#DC8850", "#D97706"];
 
 const idleState = { type: "idle" };
 const draggingState = { type: "dragging" };

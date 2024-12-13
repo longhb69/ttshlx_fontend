@@ -9,7 +9,6 @@ const decodeKey = (key) => key.replace(/_DOT_/g, ".");
 export default function CarItem({ plate, value, cars, decreaseStudent, increaseStudent, courseId, saveChange, setSaveChange, setUpdateQueue, triggerUndo, setTriggerUndo }) {
     const [text, setText] = useState(value.note);
     const [number, setNumber] = useState(value.number_of_students)
-    const [carData, setCarData] = useState();
     const [joinCar, setJoinCar] = useState();
     const {gobalCars} = useContext(CarsContext)
     const {UpdateInfoToCar} = useContext(UpdateCarContext)

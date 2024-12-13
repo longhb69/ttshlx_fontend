@@ -1,21 +1,13 @@
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine";
-import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
-import { Pencil } from "lucide-react";
+import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import formatFirebaseTimestamp from "../../utils/formatFirebaseTimestamp";
 import { MoveRight } from "lucide-react";
-import { doc, updateDoc, getDoc } from "firebase/firestore";
-import { db } from "../../config/firebase";
-import { arrayUnion } from "firebase/firestore/lite";
 import ProgressBar from "@atlaskit/progress-bar";
-import CourseModal from "../modal/CourseModal";
 import useCarCourse from "../../hooks/useCarCourse";
 
 const idle = { type: "idle" };
 const isCarOver = { type: "is-car-over" };
-
-const encodeKey = (key) => key.replace(/\./g, "_DOT_");
-const decodeKey = (key) => key.replace(/_DOT_/g, ".");
 
 const stateColors = {
     "Chưa bắt đầu": "bg-gray-300 text-gray-800",
@@ -26,12 +18,10 @@ const stateColors = {
 
 export default function CourseList({ course, currentCars, setCourseFocus, currentCourseFocusId, setCurrentCourseFocusId, fullCarMode, setFullCarMode }) {
     const { id, state, start_date, end_date } = course;
-    //const [isModalOpen, setIsModalOpen] = useState(false);
     const columnRef = useRef(null);
     const [colState, setColState] = useState(idle);
-    const [carSlot, setCarSlot] = useState(null);
     const [carCount, setCarCount] = useState(0)
-    const { AddCarToCourse, updateCarSlot } = useCarCourse(id);
+    const { AddCarToCourse, updateCarSlot } = useCarCourse(course.id);
 
     useEffect(() => {
         if (!columnRef.current) return;
@@ -129,20 +119,9 @@ export default function CourseList({ course, currentCars, setCourseFocus, curren
                             <span>Số học viên: </span>
                             <span className="font-semibold">{carCount}</span>
                         </div>
-                    </div>
-                    {/* <div className="w-full flex items-center justify-center mt-2 p-[8px]">
-                        {/* {colState.type === "is-car-over" ? <div className="bg-slate-300 w-[70%] rounded h-[30px]"></div> : null} 
-                        {carSlot != null ? (
-                            <div className="flex gap-2">
-                                <span>{carSlot.plate}</span>
-                                <span>{carSlot.current_slot}</span>
-                            </div>
-                        ) : null} 
-                    </div>
-                    */}
+                    </div>   
                 </div>
             </div>
-            {/* <CourseModal course={course} trigger={isModalOpen} setTrigger={setIsModalOpen} /> */}
         </div>
     );
 }

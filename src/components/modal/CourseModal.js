@@ -1,5 +1,4 @@
-import Blanket from "@atlaskit/blanket";
-import { X, Plus, Minus, Undo2, Trash2 } from "lucide-react";
+import { X, Plus, Undo2, Trash2 } from "lucide-react";
 import {useEffect, useRef, useState } from "react";
 import formatFirebaseTimestampV2 from "../../utils/formatFirebaseTimestampV2";
 import formatFirebaseTimestamp from "../../utils/formatFirebaseTimestamp";
@@ -454,7 +453,8 @@ export default function CourseModal(props) {
                                 <tbody>
                                     {props.course.cars &&
                                         Object.entries(props.course.cars)
-                                            .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
+                                            .sort(([, carA], [ ,carB]) => carA.add_date - carB.add_date)
+                                            .reverse()
                                             .map(([key, value]) => (
                                                 <CarItem
                                                     plate={key}
