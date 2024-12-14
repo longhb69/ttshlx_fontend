@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import { collection, doc, getDoc, onSnapshot } from 'firebase/firestore';
+import { collection, doc, Firestore, getDoc, onSnapshot } from 'firebase/firestore';
 import { db } from "../../config/firebase";
 import { useEffect, useState } from "react";
 
@@ -24,67 +24,74 @@ export default function Car({}) {
                     }
                     // If the teacher field has a value (a reference)
                     if (data.teacher?.value) {
-                        const teacherRef = doc(db, data.teacher.value.path);
-                        try {
-                            const teacherSnap = await getDoc(teacherRef);
-                            const teacherData = teacherSnap.exists() ? teacherSnap.data() : null;
-
-                            const relationValue = {
-                                type: "relation",
-                                value: {
-                                    key: teacherSnap.id,
-                                    value: teacherData
-                                }
-                            }
-
-                            relation_data.teacher = relationValue
-
-                        } catch (teacherError) {
-                            console.error('Error fetching teacher data:', teacherError);
-                            return {
-                                doc_id: document.id,
-                                ...data,
-                                teacher: null 
-                            };
+                        const teacherDocRef = doc(db, "teachers", data.teacher.value)
+                        const teacherDoc = await getDoc(teacherDocRef);
+                        if (teacherDoc.exists()) {
+                            relation_data.teacher = { id: teacherDoc.id, ...teacherDoc.data() };
+                        } else {
+                            relation_data.teacher = null; // Handle missing teacher
                         }
+                        // const teacherRef = doc(db, data.teacher.value.path);
+                        // try {
+                        //     const teacherSnap = await getDoc(teacherRef);
+                        //     const teacherData = teacherSnap.exists() ? teacherSnap.data() : null;
+
+                        //     const relationValue = {
+                        //         type: "relation",
+                        //         value: {
+                        //             key: teacherSnap.id,
+                        //             value: teacherData
+                        //         }
+                        //     }
+
+                        //     relation_data.teacher = relationValue
+
+                        // } catch (teacherError) {
+                        //     console.error('Error fetching teacher data:', teacherError);
+                        //     return {
+                        //         doc_id: document.id,
+                        //         ...data,
+                        //         teacher: null 
+                        //     };
+                        // }
                     }
 
                     if(data.courses?.value) {
                         //re do this, this can handle one course but car can have many courses
-                        const courseRef = doc(db, data.courses.value.path)
-                        try {
-                            const coursesSnap = await getDoc(courseRef);
-                            const coursesData = coursesSnap.exists() ? coursesSnap.data() : null
+                        // const courseRef = doc(db, data.courses.value.path)
+                        // try {
+                        //     const coursesSnap = await getDoc(courseRef);
+                        //     const coursesData = coursesSnap.exists() ? coursesSnap.data() : null
 
-                            let joinData = {
-                                key: null,
-                                number_of_students: null,
-                                note: null
-                            }
+                        //     let joinData = {
+                        //         key: null,
+                        //         number_of_students: null,
+                        //         note: null
+                        //     }
 
-                            Object.entries(coursesData.cars?.value.cars).forEach(([key, value]) => {
-                                if (key === document.id) {
-                                    joinData.key = coursesSnap.id;
-                                    joinData.number_of_students = value.number_of_students;
-                                    joinData.note = value.note;
-                                }
-                            });
+                        //     Object.entries(coursesData.cars?.value.cars).forEach(([key, value]) => {
+                        //         if (key === document.id) {
+                        //             joinData.key = coursesSnap.id;
+                        //             joinData.number_of_students = value.number_of_students;
+                        //             joinData.note = value.note;
+                        //         }
+                        //     });
 
-                            const relationValue = {
-                                type: "relation",
-                                value: joinData
-                            }
+                        //     const relationValue = {
+                        //         type: "relation",
+                        //         value: joinData
+                        //     }
 
-                            relation_data.courses = relationValue
+                        //     relation_data.courses = relationValue
 
-                        } catch (error) {
-                            console.error('Error fetching course data:', error);
-                            return {
-                                doc_id: document.id,
-                                ...data,
-                                courses: null 
-                            };
-                        }
+                        // } catch (error) {
+                        //     console.error('Error fetching course data:', error);
+                        //     return {
+                        //         doc_id: document.id,
+                        //         ...data,
+                        //         courses: null 
+                        //     };
+                        // }
                     }
 
                     // Return the document data with the teacher information (initially null if not available)
