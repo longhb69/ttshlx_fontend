@@ -3,6 +3,7 @@ import "./App.css";
 import SideBar from "./layouts/Sidebar";
 import Home from "./pages/Home";
 import Accountant from "./pages/Board";
+import DSA1 from "./pages/DSA1";
 import DAT from "./pages/DAT";
 import Tracking from "./pages/Tracking";
 import { CarsProvider } from "./Context/CarsContext";
@@ -29,6 +30,10 @@ const router = createBrowserRouter([
                 path: "dat",
                 element: <DAT />,
             },
+            {
+                path: "dsa1",
+                element: <DSA1/>,
+            }
         ],
         errorElement: <div>404 Not Found</div>,
     },
